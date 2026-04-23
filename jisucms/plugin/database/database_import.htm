@@ -1,0 +1,67 @@
+{inc:header.htm}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-card">
+            <div class="layui-card-header">备份列表</div>
+            <div class="layui-card-body">
+                {if:empty($cms_arr)}<blockquote class="layui-elem-quote">暂无备份数据</blockquote>{else}
+                <table class="layui-table">
+                    <colgroup>
+                        <col>
+                        <col width="100">
+                        <col width="100">
+                        <col width="100">
+                        <col width="170">
+                        <col width="105">
+                    </colgroup>
+                    <thead>
+                    <tr>
+                        <th>备份名称</th>
+                        <th>备份卷数</th>
+                        <th>备份压缩</th>
+                        <th>备份大小</th>
+                        <th>备份时间</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {loop:$cms_arr $v $k}
+                    {php}$key = strtotime($k);{/php}
+                    <tr>
+                        <td>{php} echo date('Ymd-His', $v['time']);{/php}</td>
+                        <td>{$v[part]}</td>
+                        <td>{$v[compress]}</td>
+                        <td>{php} echo round($v['size']/1024, 2);{/php}K</td>
+                        <td>{php} echo date('Y-m-d H:i:s', $v['time']);{/php}</td>
+                        <td>
+                            <div class="layui-btn-group">
+                            <a class="layui-btn layui-btn-xs layui-btn-checked" href="javascript:doimport('{$key}');">还原</a>
+                            <a class="layui-btn layui-btn-xs layui-btn-danger" href="javascript:del('{$key}');">删除</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {/loop}
+                    </tbody>
+                </table>
+                {/if}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+//还原
+function doimport(k){
+    layer.confirm('确定执行还原操作？', function () {
+        adminAjax.postd("index.php?database-import-ajax-1", {"k": k});
+    });
+}
+//删除
+function del(k){
+    layer.confirm('确定删除？', function () {
+        adminAjax.postd("index.php?database-del-ajax-1", {"k": k});
+    });
+}
+</script>    
+</body>
+</html>

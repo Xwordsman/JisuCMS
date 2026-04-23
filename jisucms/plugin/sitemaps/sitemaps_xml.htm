@@ -1,0 +1,14 @@
+{php}
+header('content-type:text/xml');
+{/php}
+{$xml}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    {loop:$baidu_items $v}
+    <url>
+        <loc>{$v[loc]}</loc>
+        {if:$v[lastmod]}<lastmod>{$v[lastmod]}</lastmod>{/if}
+        <changefreq>{$v[changefreq]}</changefreq>
+        <priority>{$v[priority]}</priority>
+    </url>
+    {/loop}
+</urlset>

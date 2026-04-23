@@ -1,0 +1,248 @@
+{inc:header.htm}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-tab">
+            <ul class="layui-tab-title">
+                <li class="layui-this">数据库管理</li>
+                <li>批量替换</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+					<div class="layui-card-header">数据库常用操作</div>
+					<div class="layui-card-body">
+					<blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px; color: red;">
+					合并Adminer数据库管理插件，可以实现在线执行sql指令。未使用数据库管理时，请停用本插件！以免注入风险！<br>
+					新增一键清空表数据和批量清空多个表数据功能。<br>
+					大数据请慎用备份与还原操作！推荐使用宝塔自带数据库备份或者使用navicat进行大数据备份。
+					</blockquote>
+                    <script type="text/html" id="toolbar">
+                        <div class="layui-btn-container">
+                              <button class="layui-btn layui-btn-sm layui-btn-warm" lay-event="batchoptimize">批量优化</button>
+                              <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="batchrepair">批量修复</button>
+              				  <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="batchemptytable">批量清空</button>
+							  <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="checktable">检查</button>
+                              <button class="layui-btn layui-btn-sm layui-btn-remind" lay-event="export">备份</button>
+                              <button class="layui-btn layui-btn-sm layui-btn-checked" lay-event="import">还原</button>
+                          </div>
+                    </script>
+                    <table class="layui-hide" id="data-table" lay-filter="data-table-filter"></table>
+                    <script type="text/html" id="currentTableBar">
+                        <div class="layui-btn-group">
+                              <a class="layui-btn layui-btn-xs" lay-event="structure">结构</a>
+                              <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="optimize">优化</a>
+                              <a class="layui-btn layui-btn-xs layui-btn-normal" lay-event="repair">修复</a>
+              				<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="truncate">清空</a>
+                          </div>
+                    </script>
+					</div>
+                </div>
+                <div class="layui-tab-item">
+                    <div class="layui-card">
+                    <div class="layui-card-header">Adminer数据库在线管理</div>
+                    <div class="layui-card-body">
+                        <p><a target="_blank" rel="nofollow" href="{$url}" class="layui-btn layui-btn-normal">打开Adminer数据库管理面板</a></p>
+                    </div>					
+                        <div class="layui-card-header">数据库内容替换（数据无价，谨慎操作！）</div>
+                        <div class="layui-card-body">
+                            <form id="form" class="layui-form" action="index.php?tool-database-ajax-1" method="post">
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label required">模型</label>
+                                    <div class="layui-input-inline">
+                                        <select name="table" lay-verify="required">
+                                            {loop:$models $v}
+                                            <option value="{$v[tablename]}">{$v[name]}</option>
+                                            {/loop}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label required">字段</label>
+                                    <div class="layui-input-inline">
+                                        <select name="field" lay-verify="required">
+                                            <option value="">请选择字段</option>
+                                            <option value="title">标题</option>
+                                            <option value="intro">摘要</option>
+											<option value="content">内容</option>
+											<option value="alias">别名</option>
+											<option value="author">作者</option>
+											<option value="source">来源</option>
+											<option value="jump_url">跳转网址</option>
+											<option value="seo_title">SEO标题</option>
+											<option value="seo_keywords">SEO关键词</option>
+											<option value="seo_description">SEO描述</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label required">查找值</label>
+                                    <div class="layui-input-block">
+										<textarea name="old" required lay-verify="required" placeholder="请输入查找值" class="layui-textarea" autocomplete="off" style="min-height: 50px;"></textarea>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label class="layui-form-label">替换值</label>
+                                    <div class="layui-input-block">
+										<textarea name="new" placeholder="请输入替换值" class="layui-textarea" autocomplete="off" style="min-height: 50px;"></textarea>
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <div class="layui-input-block">
+                                        <button class="layui-btn" lay-submit lay-filter="form">执行替换</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    layui.use(['form','layer', 'table', 'miniTab'], function () {
+            var layer = layui.layer, form = layui.form, table = layui.table, miniTab = layui.miniTab;
+            table.render({
+                elem: '#data-table',
+                url: 'index.php?database-get_list-',
+                height: 'full-40',
+                toolbar: '#toolbar',
+                defaultToolbar: ['filter', 'exports', 'print'],
+                cellMinWidth: 50,
+                cols: [[
+                    {type: "checkbox", width: 50, fixed: 'left'},
+                    {field: 'Name', title: '数据表'},
+					{field: 'Comment', minwidth: 100, title: '描述'},
+                    {field: 'Engine', width: 100, title: '引擎'},
+                    {field: 'Collation', width: 140, title: '编码'},
+                    {field: 'Rows', width: 100, title: '数据量'},
+                    {field: 'size', width: 100, title: '数据大小'},
+                    {field: 'Create_time', width: 170, title: '创建时间', align: "center"},
+					{field: 'Update_time', width: 170, title: '更新时间', align: "center"},
+                    {field: 'Data_free', width: 80, title: '碎片数'},
+                    {title: '操作', width: 180, toolbar: '#currentTableBar', align: "center"}
+                ]]
+            });
+            /**
+             * toolbar监听事件 table列表 头部的操作
+             */
+            table.on('toolbar(data-table-filter)', function (obj) {
+                if (obj.event === 'batchoptimize') {
+                    var checkStatus = table.checkStatus('data-table'), data = checkStatus.data;
+                    var len = data.length;
+                    if(len == 0){
+                        layer.msg('请选择数据！',{icon:5});
+                        return false;
+                    }else{
+                        var id_arr = [];
+                        for (var i in data) {
+                            id_arr[i] = data[i]['Name'];
+                        }
+                        adminAjax.postd("index.php?database-batchoptimize-ajax-1", {"id_arr": id_arr});
+                    }
+                }else if (obj.event === 'batchrepair') {
+                    var checkStatus = table.checkStatus('data-table'), data = checkStatus.data;
+                    var len = data.length;
+                    if(len == 0){
+                        layer.msg('请选择数据！',{icon:5});
+                        return false;
+                    }else{
+                        var id_arr = [];
+                        for (var i in data) {
+                            id_arr[i] = data[i]['Name'];
+                        }
+                        adminAjax.postd("index.php?database-batchrepair-ajax-1", {"id_arr": id_arr});
+                    }
+                }else if (obj.event === 'checktable') {
+                    var checkStatus = table.checkStatus('data-table'), data = checkStatus.data;
+                    var len = data.length;
+                    if(len == 0){
+                        layer.msg('请选择数据！',{icon:5});
+                        return false;
+                    }else{
+                        var id_arr = [];
+                        for (var i in data) {
+                            id_arr[i] = data[i]['Name'];
+                        }
+                        adminAjax.postd("index.php?database-checktable-ajax-1", {"id_arr": id_arr});
+                    }
+                }else if (obj.event === 'batchemptytable') {
+                    var checkStatus = table.checkStatus('data-table'), data = checkStatus.data;
+                    var len = data.length;
+                    if(len == 0){
+                        layer.msg('请选择数据！',{icon:5});
+                        return false;
+                    }else{
+                        var id_arr = [];
+                        for (var i in data) {
+                            id_arr[i] = data[i]['Name'];
+                        }
+                        adminAjax.postd("index.php?database-batchemptytable-ajax-1", {"id_arr": id_arr});
+                    }
+                }else if (obj.event === 'export') {
+                    var checkStatus = table.checkStatus('data-table'), data = checkStatus.data;
+                    var len = data.length;
+                    if(len == 0){
+                        layer.msg('请选择数据！',{icon:5});
+                        return false;
+                    }else{
+                        layer.confirm('确定备份选中的数据表？', function () {
+                            var id_arr = [];
+                            for (var i in data) {
+                                id_arr[i] = data[i]['Name'];
+                            }
+                            adminAjax.postd("index.php?database-export-ajax-1", {"id_arr": id_arr});
+                        });
+                    }
+                }else if (obj.event === 'import') {
+                    miniTab.openNewTabByIframe({
+                        href:"index.php?database-import",
+                        title:"备份数据表",
+                    });
+                }
+            });
+            //监听每一行的操作
+            table.on('tool(data-table-filter)', function (obj) {
+                var data = obj.data;
+                if (obj.event === 'structure') {
+                    adminAjax.open('查看'+data.Name+'表结构','index.php?database-structure-table-'+data.Name,'95%','90%', function () {});
+                }else if (obj.event === 'optimize') {
+                    layer.confirm('确定优化：'+data.Name, function () {
+                        adminAjax.postd("index.php?database-optimizetable-ajax-1", {"table":data.Name});
+                    });
+                }else if (obj.event === 'repair') {
+                    layer.confirm('确定修复：'+data.Name, function () {
+                        adminAjax.postd("index.php?database-repairtable-ajax-1", {"table":data.Name});
+                    });
+                }else if (obj.event === 'truncate') {
+                    layer.confirm('确定清空：'+data.Name, function () {
+                        adminAjax.postd("index.php?database-emptytable-ajax-1", {"table":data.Name});
+                    });
+                }
+            });
+    		//监听提交
+    		form.on('submit(form)', function () {
+    			adminAjax.postform('#form',function (data) {
+    				var json = toJson(data);
+    				if( json.err == 0 ){
+    					var icon = 1;
+    				}else{
+    					var icon = 5;
+    				}
+    				layer.msg(json.msg, {icon: icon});
+    				if(json.err==0) {
+    					setTimeout(function(){
+    						window.location.reload();
+    					}, 1500);
+    				}
+    			});
+    			return false;
+    		});		
+        });
+</script>
+<script type="text/javascript">
+    $("#import").click(function(){
+          parent.oneTab("database-import");
+      });
+</script>
+</body>
+</html>

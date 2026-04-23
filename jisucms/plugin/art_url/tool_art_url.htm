@@ -1,0 +1,101 @@
+{inc:header.htm}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form id="form" class="layui-form" action="index.php?tool-art_url-ajax-1" method="post">
+            <div class="layui-tab">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">文章URL提取器</li>
+                    <li>联系作者</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">		
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">模型mid</label>
+                            <div class="layui-input-inline">
+                                {$input[art_mid]}
+                            </div>
+							<div class="layui-form-mid layui-word-aux">默认文章模型2，其他模型根据模型mid值输入。不支持单页模型，也就是mid不能输入1，需要输入大于1的正整数</div>
+                        </div>	
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">分类cid</label>
+                            <div class="layui-input-inline">
+                                {$input[art_cid]}
+                            </div>
+							<div class="layui-form-mid layui-word-aux">输入需要生成的分类cid，输入0则提取指定mid的所有分类</div>
+                        </div>						
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">生成数量</label>
+                            <div class="layui-input-inline">
+                                {$input[art_urlnum]}
+                            </div>
+							<button class="layui-btn" lay-submit lay-filter="form">生成链接</button>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">URL列表</label>
+                            <div class="layui-input-block">
+                                {$input[art_urls]}
+                            </div>
+                        </div>						
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <a id="copyBtn" class="layui-btn layui-btn-danger del">复制链接</a><span id="copySuccessMessage"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-tab-item">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">联系我们</label>
+                            <div class="layui-form-mid layui-word-aux">QQ:1102264200</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript" src="{$C[admin_static]}js/jquery.js"></script>
+<script type="text/javascript" src="{$C[admin_static]}js/clipboard.min.js"></script>
+<style>
+  .layui-btn-jason{height:30px;line-height:30px;padding:0 10px;margin-top:4px;margin-right: 10px;}
+  #copySuccessMessage {color: #009688;padding:10px}
+</style>
+<script type="text/javascript">
+  $(document).ready(function() {
+    // 初始化剪贴板对象
+    var clipboard = new ClipboardJS('#copyBtn', {
+      text: function() {
+        // 获取URL列表的内容
+        return $('#artUrls').val();
+      }
+    });
+    // 复制成功时的回调函数
+    clipboard.on('success', function(e) {
+      // 显示复制成功的提示消息
+      $('#copySuccessMessage').text("复制成功！");
+      // 设置定时器，在3秒后隐藏提示消息
+      setTimeout(function() {
+        $('#copySuccessMessage').text("");
+      }, 1000);
+      // 可以添加其他操作
+    });
+    // 复制失败时的回调函数
+    clipboard.on('error', function(e) {
+      alert("复制失败！");
+      // 可以添加其他操作
+    });
+  });
+</script>
+<script type="text/javascript">
+    layui.use('form', function() {
+        var form = layui.form;
+        //监听提交
+        form.on('submit(form)', function() {
+            adminAjax.submit("#form");
+        });
+		//$("#form").find("input").val("");//递交成功清空input
+		//$("#form").find("textarea").val("");//递交成功清空textarea
+		return false;
+    });
+</script>
+</body>
+</html>

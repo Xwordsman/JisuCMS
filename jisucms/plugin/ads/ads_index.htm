@@ -1,0 +1,96 @@
+{inc:header.htm}
+<div class="layuimini-container">
+	<div class="layuimini-main">
+
+		<script type="text/html" id="toolbar">
+			<div class="layui-btn-container">
+				<button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="add">添加</button>
+				<button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="delete">批量删除</button>
+			</div>
+		</script>
+		<table class="layui-hide" id="data-table" lay-filter="data-table-filter"></table>
+
+		<script type="text/html" id="currentTableBar">
+			<div class="layui-btn-group">
+				<a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+				<a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</a>
+			</div>
+		</script>
+	</div>
+</div>
+
+<script type="text/javascript">
+	layui.use(['form','layer', 'table', 'miniTab'], function () {
+		var layer = layui.layer, form = layui.form, table = layui.table, miniTab = layui.miniTab;
+
+		table.render({
+			elem: '#data-table',
+			url: 'index.php?ads-get_list-',
+			height: 'full-145',
+			toolbar: '#toolbar',
+			defaultToolbar: ['filter', 'exports', 'print'],
+			cellMinWidth: 50,
+			cols: [[
+				{type: "checkbox", width: 50, fixed: 'left'},
+				{field: 'alias', width: 120, title: '唯一标识'},
+				{field: 'title', minwidth: 120, title: '标题', edit: 'text'},
+				{field: 'exdate', minwidth: 120, title: '到期时间', edit: 'text',templet:"<div>{{layui.util.toDateString(d.exdate*1000, 'yyyy-MM-dd HH:mm:ss')}}</div>"},
+				{title: '操作', width: 105, toolbar: '#currentTableBar', align: "center"}
+			]],
+			limits: [10, 15, 20, 25, 50, 100],
+			limit: 15,
+			page: true
+		});
+		/**
+		 * toolbar监听事件 table列表 头部的操作
+		 */
+		table.on('toolbar(data-table-filter)', function (obj) {
+			if (obj.event === 'delete') {  // 监听删除操作
+				var checkStatus = table.checkStatus('data-table')
+						, data = checkStatus.data;
+				var len = data.length;
+				if(len == 0){
+					layer.msg('请选择数据！',{icon:5});
+					return false;
+				}else{
+					layer.confirm('删除不可恢复，确定删除？', function () {
+						var id_arr = [];
+						for (var i in data) {
+							id_arr[i] = data[i]['id'];
+						}
+						adminAjax.postd("index.php?ads-batch_del-ajax-1", {"id_arr": id_arr});
+					});
+				}
+			}else if (obj.event === 'add') {
+				miniTab.openNewTabByIframe({
+					href:"index.php?ads-add",
+					title:"添加广告",
+				});
+			}
+		});
+		//监听单元格编辑
+		table.on('edit(data-table-filter)', function(obj){
+			var value = obj.value //得到修改后的值
+					,data = obj.data //得到所在行所有键值
+					,field = obj.field; //得到字段
+			adminAjax.postd("index.php?ads-set-ajax-1", {"id":data.id, "field":field, "value":value});
+		});
+		//监听每一行的操作
+		table.on('tool(data-table-filter)', function (obj) {
+			var data = obj.data;
+
+			if (obj.event === 'delete') {
+				layer.confirm('删除不可恢复，确定删除？', function () {
+					adminAjax.postd("index.php?ads-del-ajax-1", {"id":data.id});
+				});
+			}else if (obj.event === 'edit') {
+				miniTab.openNewTabByIframe({
+					href:"index.php?ads-edit-id-"+data.id,
+					title:"编辑广告",
+				});
+			}
+		});
+	});
+</script>
+</body>
+</html>

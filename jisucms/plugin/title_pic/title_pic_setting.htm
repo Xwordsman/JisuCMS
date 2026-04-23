@@ -1,0 +1,75 @@
+{inc:header.htm}
+<div class="layui-card">
+	<div class="layui-card-header">标题缩略图 设置</div>
+	<div class="layui-card-body">
+		<form id="form" class="layui-form" action="index.php?tool-title_pic-ajax-1" method="post">
+			<input type="hidden" name="do" value="1" />		
+			<div class="layui-form-item">
+				<label class="layui-form-label">缓存时间</label>
+				<div class="layui-input-inline">
+					{$input[cache_day]}
+				</div>
+				<div class="layui-form-mid layui-word-aux">客户端浏览器缓存时间（天）</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">水印透明度</label>
+				<div class="layui-input-inline">
+					{$input[watermark_transparency]}
+				</div>
+				<div class="layui-form-mid layui-word-aux">源图生成背景图的文字区域水印框（1~100）</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label"></label>
+				<div class="layui-input-inline">
+					<button class="layui-btn" lay-submit lay-filter="form">保存</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-header">生成背景图</div>
+	<div class="layui-card-body">
+		<form id="form1" class="layui-form" action="index.php?tool-title_pic-ajax-1" method="post">
+			<input type="hidden" name="do" value="2" />
+			<div class="layui-form-item">
+				<label class="layui-form-label">源图</label>
+				<div class="layui-form-mid layui-word-aux">请先把 500*335大小的 jpg 格式源图存放到当前插件目录下的src_img文件夹下面！</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label"></label>
+				<div class="layui-input-inline">
+					<button class="layui-btn" lay-submit lay-filter="form1">执行</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-body">
+		<fieldset class="layui-elem-field">
+			<legend>说明</legend>
+			<div class="layui-field-box">
+				<p>如果你不需要文字区域水印框，你可以直接把 500*335大小的 jpg 格式图片存放到当前插件目录下的bg_img文件夹下面！</p>
+				<p>不再需要执行生成背景图！！！</p>
+			</div>
+		</fieldset>
+	</div>
+</div>
+<script type="text/javascript">
+	layui.use('form', function(){
+		var form = layui.form;
+		var $ = layui.jquery;
+
+		//监听提交
+		form.on('submit(form)', function(){
+			adminAjax.submit("#form");
+		});
+		//监听提交
+		form.on('submit(form1)', function(){
+			adminAjax.submit("#form1");
+		});
+	});
+</script>
+</body>
+</html>

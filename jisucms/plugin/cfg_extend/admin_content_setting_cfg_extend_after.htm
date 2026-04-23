@@ -1,0 +1,24 @@
+<script type="text/javascript">
+(function(){
+	if(typeof window.editor_once != 'undefined') return;
+    window.editor_once = 1;
+
+	// 获取后台路径
+	window.admurl = (function() {
+		var url = document.URL || location.href;
+		return url.substr(0, url.lastIndexOf("/"));
+	})();
+
+	// 获取首页路径
+	window.weburl = (function() {
+		return admurl.substr(0, admurl.lastIndexOf("/"));
+	})();
+
+    window.SDEDITOR_HOME_URL = weburl+"/app/plugin/editor_sd/sdeditor/";
+    loadJs(SDEDITOR_HOME_URL+"editor.js?r="+Math.random(),function () {
+        window.editor = $("#content").editor({
+            upload: window.admurl + "/index.php?attach-up_sdeditor-ajax-1" + '{$edit_cid_id}'
+        });
+    });
+})();
+</script>

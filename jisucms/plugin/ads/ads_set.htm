@@ -1,0 +1,181 @@
+{inc:header.htm}
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form id="form" class="layui-form" action="index.php?ads-{$_GET['action']}-ajax-1" method="post">
+            <input name="id" type="hidden" value="{$data[id]}" />
+            <div class="layui-form-item">
+                <label class="layui-form-label required">唯一标识</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="alias" value="{$data[alias]}" autocomplete="off" placeholder="请输入唯一标识" class="layui-input" lay-verify="required" lay-reqtext="唯一标识不能为空" />
+                </div>
+                <div class="layui-form-mid layui-word-aux">数字 字母 下划线（用于数据调用）</div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">标题</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" value="{$data[title]}" autocomplete="off" placeholder="请输入标题" class="layui-input" lay-reqtext="标题不能为空" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">图片</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="pic" name="pic" value="{$data[pic]}" autocomplete="off" placeholder="请上传图片" class="layui-input" />
+                </div>
+                <div class="layui-input-inline">
+                    <button type="button" class="layui-btn" id="pic_btn">
+                        <i class="layui-icon">&#xe67c;</i>上传图片
+                    </button>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">内容</label>
+                <div class="layui-input-block">
+                    <textarea id="content" name="content"  class="layui-textarea" autocomplete="off" placeholder="广告内容" style="min-height: 50px;">{$data[content]}</textarea>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">代码</label>
+                <div class="layui-input-block">
+                    <textarea name="code"  class="layui-textarea" autocomplete="off" placeholder="HTML广告代码" style="min-height: 50px;">{$data[code]}</textarea>
+                </div>
+            </div>			
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">到期时间</label>
+                    <div class="layui-input-inline">
+                        {if:$_GET['action'] == 'add'}<input type="text" name="exdate" id="exdate" value="{$data[exdate]}" class="layui-input" placeholder="yyyy-MM-dd HH:mm:ss">{/if}
+						{if:$_GET['action'] == 'edit'}
+						{php}$date = date("Y-m-d H:i:s",$data['exdate']);{/php}
+						<input type="text" name="exdate" id="exdate" value="{$date}" class="layui-input">
+						{/if}
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">链接</label>
+                <div class="layui-input-block">
+                    <input type="text" name="url" value="{$data[url]}" autocomplete="off" placeholder="请输入链接" class="layui-input" />
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label ">显示选项</label>
+                <div class="layui-input-block">
+                    <input title="不显示广告" name="client" type="radio" value="0" {if:$_GET['action'] == 'edit' && $data['client']==0} checked="checked"{/if}>
+                    <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i>
+                        <div>不显示广告</div>
+                    </div>
+					<input title="移动端显示" name="client" type="radio" value="1" {if:$_GET['action'] == 'edit' && $data['client']==1} checked="checked"{/if}>
+                    <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i>
+                        <div>移动端显示</div>
+                    </div>
+                    <input title="电脑端显示" name="client" type="radio" value="2" {if:$_GET['action'] == 'edit' && $data['client']==2} checked="checked"{/if}>
+                    <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i>
+                        <div>电脑端显示</div>
+                    </div>
+					<input title="移动端和电脑端都显示" name="client" type="radio" value="3" {if:$_GET['action'] == 'edit' && $data['client']==3} checked="checked"{/if}>
+                    <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i>
+                        <div>移动端和电脑端都显示</div>
+                    </div>					
+                </div>				
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户可见</label>
+                <div class="layui-input-block">
+                    <input title="游客可见" name="status" type="radio" value="0" {if:$_GET['action'] == 'edit' && $data['status']==0} checked="checked"{/if}>
+                    <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i>
+                        <div>游客可见</div>
+                    </div>
+					<input title="注册可见" name="status" type="radio" value="1" {if:$_GET['action'] == 'edit' && $data['status']==1} checked="checked"{/if}>
+                    <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i>
+                        <div>注册可见</div>
+                    </div>
+					<input title="VIP可见" name="status" type="radio" value="2" {if:$_GET['action'] == 'edit' && $data['status']==2} checked="checked"{/if}>
+                    <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i>
+                        <div>VIP可见</div>
+                    </div>	
+					<input title="全员可见" name="status" type="radio" value="3" {if:$_GET['action'] == 'edit' && $data['status']==3} checked="checked"{/if}>
+                    <div class="layui-unselect layui-form-radio"><i class="layui-anim layui-icon"></i>
+                        <div>全员可见</div>
+                    </div>						
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="form">保存</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    layui.use(['form', 'laydate', 'layer', 'miniTab', 'upload'], function() {
+        var layer = layui.layer,
+            form = layui.form,
+            miniTab = layui.miniTab,
+            upload = layui.upload,
+            laydate = layui.laydate;
+        upload.render({
+            elem: '#pic_btn',
+            url: 'index.php?attach-upload_pic-table-ads',
+            field: 'upfile',
+            accept: 'images',
+            acceptMime: 'image/*',
+            done: function(res) {
+                if (res.err == 1) {
+                    layer.msg(res.msg, {
+                        icon: 5
+                    });
+                } else {
+                    $("#pic").val(res.data.src);
+                    layer.msg('上传成功！', {
+                        icon: 1
+                    });
+                }
+            },
+            error: function() {
+                layer.msg('请求异常', {
+                    icon: 5
+                });
+            }
+        });
+        // layedit.set({uploadImage: {url:'index.php?attach-upload_pic-table-ads-layedit-1', type: 'post'}});
+        // var layeditindex = layedit.build('content');
+        // form.verify({
+        // 	content:function () {
+        // 		layedit.sync(layeditindex)
+        // 	}
+        // });
+        // 日期时间选择器
+        laydate.render({
+            elem: '#exdate',
+            type: 'datetime',
+        });
+        //监听提交
+        form.on('submit(form)', function() {
+            if (window.hasOwnProperty('editor')) {
+                window.editor.async();
+            }
+            adminAjax.postform('#form', function(data) {
+                var json = toJson(data);
+                if (json.err == 0) {
+                    var icon = 1;
+                } else {
+                    var icon = 5;
+                }
+                layer.msg(json.msg, {
+                    icon: icon
+                });
+                if (json.err == 0) {
+                    setTimeout(function() {
+                        miniTab.reloadIframe('index.php?ads-index');
+                        miniTab.deleteCurrentByIframe();
+                    }, 1500);
+                }
+            });
+            return false;
+        });
+    });
+</script>
+{hook:admin_ads_set_after.htm}
+</body>
+</html>

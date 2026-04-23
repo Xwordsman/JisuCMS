@@ -1,0 +1,51 @@
+{inc:header.htm}
+<div class="layuimini-container">
+	<div class="layuimini-main">
+		<div class="layui-card">
+			<div class="layui-card-header">错误日志：（文件大小：{$filesize}，总行数：{$total}）<a id="clear" class="layui-btn layui-btn-danger layui-btn-sm">清空</a></div>
+			<div class="layui-card-body">
+				<table class="layui-table">
+					<colgroup>
+						<col width="170">
+						<col width="120">
+						<col>
+						<col width="220">
+					</colgroup>
+					<thead>
+					<tr>
+						<th>时间</th>
+						<th>IP</th>
+						<th>URL</th>
+						<th>内容</th>
+					</tr>
+					</thead>
+					<tbody>
+					{if:empty($data_arr)}
+					<tr>
+						<td colspan="4">暂无内容</td>
+					</tr>
+					{else}
+					{loop:$data_arr $v}
+					<tr>
+						<td>{$v[date]}</td>
+						<td>{$v[ip]}</td>
+						<td>{$v[url]}</td>
+						<td>{$v[content]}</td>
+					</tr>
+					{/loop}
+					{/if}
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	$("#clear").click(function(){
+		layer.confirm('不可恢复，确定清空？', function () {
+			adminAjax.postd("index.php?log-clearlog-ajax-1", {"type": "log404"});
+		});
+	});
+</script>
+</body>
+</html>

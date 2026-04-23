@@ -1,0 +1,166 @@
+{inc:header.htm}
+<div class="layui-card">
+	<div class="layui-card-header">百度sitemap</div>
+	<div class="layui-card-body">
+		<div class="layui-tab">
+			<ul class="layui-tab-title">
+				<li class="layui-this">地图设置</li>
+				<li>生成TXT</li>
+			</ul>
+			<div class="layui-tab-content">
+				<div class="layui-tab-item layui-show">
+					<form id="form" class="layui-form" action="index.php?tool_sitemaps-setting-ajax-1" method="post">
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">首页</label>
+								<div class="layui-input-inline">
+									{$input[baidu_changefreq_index]}
+								</div>
+								<div class="layui-input-inline">
+									{$input[baidu_priority_index]}
+								</div>
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">分类页</label>
+								<div class="layui-input-inline">
+									{$input[baidu_changefreq_category]}
+								</div>
+								<div class="layui-input-inline">
+									{$input[baidu_priority_category]}
+								</div>
+							</div>
+						</div>
+						{loop:$models_arr $model}
+						{php}$mid = $model['mid'];{/php}
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">{$model[name]}内容</label>
+								<div class="layui-input-inline">
+									{php}echo $input['baidu_changefreq_content_'.$mid];{/php}
+								</div>
+								<div class="layui-input-inline">
+									{php}echo $input['baidu_priority_content_'.$mid];{/php}
+								</div>
+								<div class="layui-input-inline">
+									{php}echo $input['content_count_'.$mid];{/php}
+								</div>
+								<div class="layui-form-mid layui-word-aux">最新多少条</div>
+							</div>
+						</div>
+						{/loop}
+						{loop:$models_arr $model}
+						{php}$mid = $model['mid'];{/php}
+						<div class="layui-form-item">
+							<div class="layui-inline">
+								<label class="layui-form-label">{$model[name]}标签</label>
+								<div class="layui-input-inline">
+									{php}echo $input['baidu_changefreq_tag_'.$mid];{/php}
+								</div>
+								<div class="layui-input-inline">
+									{php}echo $input['baidu_priority_tag_'.$mid];{/php}
+								</div>
+								<div class="layui-input-inline">
+									{php}echo $input['tag_count_'.$mid];{/php}
+								</div>
+								<div class="layui-form-mid layui-word-aux">最新多少条</div>
+							</div>
+						</div>
+						{/loop}
+						<div class="layui-form-item">
+							<label class="layui-form-label">缓存时间</label>
+							<div class="layui-input-inline">
+								{$input[life]}
+							</div>
+							<div class="layui-form-mid layui-word-aux">
+								（秒）
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">TXT数量</label>
+							<div class="layui-input-inline">
+								{$input[count]}
+							</div>
+							<div class="layui-form-mid layui-word-aux">
+								每个txt文件内容URL数量，根据您的服务器性能而定，不能超过10000.
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-input-block">
+								<button class="layui-btn" lay-submit lay-filter="form">保存</button>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="layui-tab-item">
+					<form id="form1" class="layui-form" action="index.php?tool_sitemaps-txt-ajax-1" method="post">
+						<div class="layui-form-item">
+							<label class="layui-form-label">内容模型</label>
+							<div class="layui-input-inline">
+								{$input[mid]}
+							</div>
+							<div class="layui-form-mid layui-word-aux">
+								该模型的内容URL全部生成到txt文件
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<label class="layui-form-label">方式</label>
+							<div class="layui-input-block">
+								<input type="radio" name="method" value="0" title="全部" checked>
+								<input type="radio" name="method" value="1" title="部分">
+							</div>
+							<div class="layui-form-mid layui-word-aux">
+								一般情况下，第一次选【全部】生成，后续新增内容，选【部分】生成。如果生成txt后有删除过内容，选择【全部】
+							</div>
+						</div>
+						<div class="layui-form-item">
+							<div class="layui-input-block">
+								<button class="layui-btn" lay-submit lay-filter="form1">生成TXT</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="layui-card">
+	<div class="layui-card-header">地图链接</div>
+	<div class="layui-card-body">
+		<blockquote class="layui-elem-quote layui-quote-nm">
+			<p>XML地图：{$weburl}sitemap.xml</p>
+			<p>HTML地图：{$weburl}sitemap.html</p>
+			<p>TXT地图：{$weburl}sitemap.txt</p>
+		</blockquote>
+	</div>
+</div>
+
+<div class="layui-card">
+	<div class="layui-card-header">TXT文件链接</div>
+	<div class="layui-card-body">
+		<blockquote class="layui-elem-quote layui-quote-nm">
+			<p>{$weburl}sitemaps/txt2/数字.txt</p>
+			<p>2表示是文章，其他模型的请更改2为对应的mid。</p>
+		</blockquote>
+	</div>
+</div>
+
+<script type="text/javascript">
+	layui.use('form', function(){
+		var form = layui.form;
+
+		//监听提交
+		form.on('submit(form)', function(){
+			adminAjax.submit("#form");
+		});
+		form.on('submit(form1)', function(data){
+			data = data.field;
+			window.open("{$weburl}index.php?views-sitemaps_txt-mid-"+data.mid+"-method-"+data.method);
+			return false;
+		});
+	});
+</script>
+</body>
+</html>

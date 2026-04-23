@@ -1,0 +1,126 @@
+{inc:header.htm}
+<div class="layui-card">
+	<div class="layui-card-header">cfg 扩展信息列表</div>
+	<div class="layui-card-body">
+		<table class="layui-table layui-form">
+			<colgroup>
+				<col width="120">
+				<col width="150">
+				<col>
+				<col>
+				<col width="105">
+			</colgroup>
+			<thead>
+			<tr>
+				<th>唯一标识</th>
+				<th>名称</th>
+				<th>内容</th>
+				<th>备注</th>
+				<th>操作</th>
+			</tr>
+			</thead>
+			<tbody>
+			{loop:$setting $v $k}
+			<tr key="{$k}">
+				<td>{$k}</td>
+				<td><textarea name="name" class="layui-textarea" autocomplete="off" placeholder="请输入名称" style="min-height: 50px;">{$v[name]}</textarea></td>
+				<td><textarea name="val" class="layui-textarea" autocomplete="off" placeholder="请输入内容" style="min-height: 50px;">{$v[val]}</textarea></td>
+				<td><textarea name="remark" class="layui-textarea" autocomplete="off" placeholder="请输入备注" style="min-height: 50px;">{$v[remark]}</textarea></td>
+				<td>
+					<div class="layui-btn-group">
+						<a class="layui-btn layui-btn-xs" href="javascript:void(0)" onclick="save('{$k}')">修改</a>
+						<a class="layui-btn layui-btn-xs layui-btn-danger" href="javascript:void(0)" onclick="del('{$k}')">删除</a>
+					</div>
+				</td>
+			</tr>
+			{/loop}
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-header">添加 cfg 扩展信息</div>
+	<div class="layui-card-body">
+		<form id="form" class="layui-form" action="index.php?setting-cfg_extend-ajax-1" method="post">
+			<div class="layui-form-item">
+				<label class="layui-form-label required">唯一标识</label>
+				<div class="layui-input-inline">
+					<input type="text" name="alias" required  lay-verify="required" placeholder="请输入唯一标识" maxlength="30" autocomplete="off" class="layui-input">
+				</div>
+				<div class="layui-form-mid layui-word-aux">数字字母下划线，不得和上面的唯一标识重复</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label required">名称</label>
+				<div class="layui-input-block">
+					<textarea name="name" class="layui-textarea" autocomplete="off" placeholder="请输入名称" style="min-height: 50px;"></textarea>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label required">内容</label>
+				<div class="layui-input-block">
+					<textarea name="val" id="content" class="layui-textarea" autocomplete="off" placeholder="请输入内容" style="min-height: 50px;"></textarea>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">备注</label>
+				<div class="layui-input-block">
+					<textarea name="remark" class="layui-textarea" autocomplete="off" placeholder="请输入备注" style="min-height: 50px;"></textarea>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button class="layui-btn" lay-submit lay-filter="form">保存</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="layui-card">
+	<div class="layui-card-header">前台模板调用</div>
+	<div class="layui-card-body">
+		<pre><p>名称：{$cfg[cfg_extend][唯一标识][name]}</p><p>内容：{$cfg[cfg_extend][唯一标识][val]}</p><p>备注：{$cfg[cfg_extend][唯一标识][remark]}</p></pre>
+	</div>
+</div>
+{hook:admin_content_setting_cfg_extend_after.htm}
+<script type="text/javascript">
+	function del(key) {
+		layer.confirm('确定删除该选项？', function () {
+			adminAjax.postd("index.php?setting-cfg_extend-ajax-1", {"key": key, "del": 1});
+		});
+	}
+	function save(key) {
+		var obj = $("tr[key='"+key+"']");
+		var name = obj.find("textarea[name='name']").val();
+		var val = obj.find("textarea[name='val']").val();
+		var remark = obj.find("textarea[name='remark']").val();
+
+		var key_arr = [name, val, remark];
+		layer.confirm('确定修改该选项？', function () {
+			adminAjax.postd("index.php?setting-cfg_extend-ajax-1", {"key": key, "key_arr": key_arr, "edit": 1});
+		});
+	}
+	layui.use('form', function(){
+		var form = layui.form;
+
+		//监听提交
+		form.on('submit(form)', function () {
+			adminAjax.postform('#form',function (data) {
+				var json = toJson(data);
+				if( json.err == 0 ){
+					var icon = 1;
+				}else{
+					var icon = 5;
+				}
+				layer.msg(json.msg, {icon: icon});
+				if(json.err==0) {
+					setTimeout(function(){
+						window.location.reload();
+					}, 1500);
+				}
+			});
+			return false;
+		});
+	});
+</script>
+</body>
+</html>

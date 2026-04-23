@@ -1,0 +1,2 @@
+# 此文件用于保留 runcache 目录在 Git 中
+# 实际的缓存文件会被 .gitignore 忽略
