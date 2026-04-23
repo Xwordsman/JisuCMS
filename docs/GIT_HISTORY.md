@@ -45,22 +45,66 @@
 - **代码行数**: 89,508 行插入
 - **推送状态**: ✅ 已推送到 GitHub
 
-#### 🌿 分支: `develop`
-
-**提交 1: 创建开发分支**
+**提交 2: 更新 Git 配置和文档**
 - **提交者**: Xwordsman
-- **提交信息**: 从 `main` 分支创建 `develop` 开发分支
-- **分支说明**: 
-  - `develop` 分支用于日常开发和功能集成
-  - 所有新功能开发应从此分支创建 feature 分支
-  - 稳定后合并回 `main` 分支并发布新版本
+- **提交信息**: `chore: 更新 Git 配置和文档`
+- **提交内容**:
+  - ✅ 更新 .gitignore 排除 .kiro 目录
+  - ✅ 创建 Git 开发历史记录文档 (docs/GIT_HISTORY.md)
+  - ✅ 记录项目初始化和分支策略
+  - ✅ 简化为单分支工作流（仅使用 main 分支）
 - **推送状态**: ✅ 已推送到 GitHub
 
 ---
 
 ## 🌿 分支策略
 
-### 主要分支
+### 单人开发模式（当前）
+
+目前项目由单人维护，采用**简化的单分支工作流**：
+
+| 分支 | 用途 | 说明 |
+|------|------|------|
+| `main` | 主分支 | 所有开发和发布都在此分支进行 |
+
+**工作流程**:
+```bash
+# 1. 直接在 main 分支开发
+git checkout main
+git pull origin main
+
+# 2. 修改代码
+# ... 编辑文件 ...
+
+# 3. 提交并推送
+git add .
+git commit -m "feat: 添加新功能"
+git push origin main
+```
+
+**版本发布**:
+```bash
+# 1. 更新版本号
+# 编辑 install/config.sample.php
+
+# 2. 提交版本更新
+git add install/config.sample.php
+git commit -m "chore: 发布 v1.1.0"
+
+# 3. 打标签
+git tag -a v1.1.0 -m "Release v1.1.0"
+
+# 4. 推送
+git push origin main --tags
+```
+
+---
+
+### 多人协作模式（未来可选）
+
+当有多人协作时，可以采用 **Git Flow 工作流**：
+
+#### 主要分支
 
 | 分支 | 用途 | 保护 | 说明 |
 |------|------|------|------|
@@ -185,7 +229,26 @@ Closes #123"
 
 ## 🔄 工作流程
 
-### 日常开发流程
+### 单人开发流程（当前使用）
+
+```bash
+# 1. 拉取最新代码
+git pull origin main
+
+# 2. 开发功能
+# ... 编辑代码 ...
+
+# 3. 提交代码
+git add .
+git commit -m "feat: 添加新功能"
+
+# 4. 推送到远程
+git push origin main
+```
+
+### 多人协作流程（未来可选）
+
+#### 日常开发流程
 
 ```bash
 # 1. 更新 develop 分支
@@ -219,7 +282,7 @@ git branch -d feature/new-feature
 git push origin --delete feature/new-feature
 ```
 
-### 版本发布流程
+### 版本发布流程（多人协作模式）
 
 ```bash
 # 1. 从 develop 创建发布分支
