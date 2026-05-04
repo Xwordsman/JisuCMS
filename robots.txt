@@ -1,0 +1,5 @@
+User-agent: * 
+Disallow: /jisucms/
+Disallow: /admin*
+Disallow: /runtime/
+Disallow: /install/
