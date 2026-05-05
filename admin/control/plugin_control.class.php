@@ -146,7 +146,7 @@ class plugin_control extends admin_control {
 		isset($plugins[$dir]) && E(1, lang('plugin_is_installed'));
 
 		$cms_version = $this->get_version($dir);
-		$cms_version && version_compare($cms_version, C('version'), '>') && E(1, lang('plugin_version_failed').'：'.$cms_version);
+		$cms_version && version_compare($cms_version, JISUCMS_VERSION, '>') && E(1, lang('plugin_version_failed').'：'.$cms_version);
 
 		// 检测有 install.php 文件，则执行安装
 		$install = PLUGIN_PATH.$dir.'/install.php';

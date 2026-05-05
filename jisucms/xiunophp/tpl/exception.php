@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title><?php echo '极'.'速'.'CMS'.' '.C('version').' '.lang('error'); ?></title>
+<title><?php echo '极'.'速'.'CMS'.' '.JISUCMS_VERSION.' '.lang('error'); ?></title>
 <style type="text/css">
 body,div,ul,li,h1{margin:0;padding:0}
 .lecont h1,.lecont ul,.lecont ul li,.lecont ul li span,.lecont ul table tr td{font:14px/1.6 'Microsoft YaHei',Verdana,Arial,sans-serif}
@@ -58,7 +58,7 @@ body,div,ul,li,h1{margin:0;padding:0}
 		<li><span><?php echo lang('runtime_trace'); ?>:</span> <?php echo runtime();?></li>
 		<li><span><?php echo lang('runmen_trace'); ?>:</span> <?php echo runmem();?></li>
 	</ul>
-	<ul class="fo"><?php echo '极'.'速'.'CMS'.' '.C('version'); ?></ul>
+	<ul class="fo"><?php echo '极'.'速'.'CMS'.' '.JISUCMS_VERSION; ?></ul>
 </div>
 </body>
 </html>
