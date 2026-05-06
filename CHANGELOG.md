@@ -15,6 +15,33 @@
 ### 修复
 - 待发布的问题修复
 
+## [1.4.0] - 2026-05-06
+
+### 变更
+- **重要变更**：插件目录由 `jisucms/plugin/` 上提到项目根目录 `plugin/`
+  - 与 `theme/`、`upload/` 保持同一层级，整体结构更清晰
+  - `PLUGIN_PATH` 常量值由 `APP_PATH.'plugin/'` 改为 `ROOT_PATH.'plugin/'`
+  - 框架内 50+ 处插件路径引用全部走 `PLUGIN_PATH` 常量，自动适配
+- 安装程序写权限检查项 `jisucms/plugin` 改为 `plugin`
+- 后台插件管理页面 `admin/view/default/plugin_index.htm` 中 3 处图片 URL 由 `../jisucms/plugin/` 改为 `../plugin/`
+
+### 兼容性
+- 插件内部代码若通过 `PLUGIN_PATH` 常量访问路径，**无需任何修改**
+- 仅当插件硬编码了字符串 `jisucms/plugin/` 才需改为 `plugin/`（较罕见）
+- 插件配置文件位置不变，仍位于 `jisucms/config/plugin.inc.php`
+
+### 升级须知
+- 物理移动：`jisucms/plugin/` → `plugin/`
+- 后台 → 工具 → 清理缓存
+- 删除 `runtime/cache/_jisucms.php`（如存在）
+
+### 技术细节
+- 修改文件：
+  - `jisucms/xiunophp/xiunophp.php` - `PLUGIN_PATH` 常量定义改为 `ROOT_PATH.'plugin/'`
+  - `install/view/check_env.php` - 安装写权限检查目录更新
+  - `admin/view/default/plugin_index.htm` - 后台插件页 3 处图片路径更新
+- 物理变更：`jisucms/plugin/` 整体移动到 `plugin/`
+
 ## [1.3.0] - 2026-05-06
 
 ### 变更
@@ -116,7 +143,8 @@
 - 数据库：MySQL 5.5+
 - PHP版本：5.4+（推荐 7.0+）
 
-[Unreleased]: https://github.com/Xwordsman/JisuCMS/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/Xwordsman/JisuCMS/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/Xwordsman/JisuCMS/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/Xwordsman/JisuCMS/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Xwordsman/JisuCMS/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Xwordsman/JisuCMS/compare/v1.0.0...v1.1.0

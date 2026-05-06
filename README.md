@@ -1,7 +1,7 @@
 # 极速CMS (JisuCMS)
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.3.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.4.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/php-%3E%3D5.4-brightgreen.svg" alt="PHP Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
 </p>
@@ -66,6 +66,7 @@ git clone https://github.com/Xwordsman/JisuCMS.git
 - `runtime/log/` - 日志目录
 - `upload/` - 上传文件目录
 - `theme/` - 前台主题目录
+- `plugin/` - 插件目录
 
 ### 3. 运行安装程序
 
@@ -83,7 +84,21 @@ git clone https://github.com/Xwordsman/JisuCMS.git
 - 修改默认管理员密码
 - 配置文件权限
 
-### 5. 从旧版本升级（v1.2.0 → 主题目录改名）
+### 5. 从旧版本升级
+
+#### v1.3.0 → v1.4.0（插件目录上提到根目录）
+
+> 自 v1.4.0 起，**插件目录由 `jisucms/plugin/` 上提到项目根目录 `plugin/`**，与 `theme/`、`upload/` 保持同一层级，结构更清晰。
+
+升级步骤：
+
+1. 备份原 `jisucms/plugin/` 目录
+2. 将其整个移动到项目根目录 `plugin/`（与新版要求一致）
+3. 后台 → 工具 → 清理缓存
+
+> 注：如果你的插件内部代码使用 `PLUGIN_PATH` 常量访问路径，无需什么修改。如果硬编码了 `jisucms/plugin/` 路径字符串（较罕见），请同步修改为 `plugin/`。
+
+#### v1.2.0 → v1.3.0（主题目录改名）
 
 > 自当前版本起，**前台主题目录由 `view/` 重命名为 `theme/`**，以更准确地表达"主题"语义。后台模板目录 `admin/view/` 与安装模板目录 `install/view/` 保持不变。
 
@@ -194,8 +209,8 @@ jisucms/
 │   ├── control/        # 前台控制器
 │   ├── lang/           # 语言包
 │   ├── model/          # 数据模型
-│   ├── plugin/         # 插件目录
 │   └── xiunophp/       # 框架核心
+├── plugin/             # 插件目录（v1.4.x 起从 jisucms/plugin/ 上提到根目录）
 ├── install/            # 安装程序
 ├── runtime/            # 运行时目录
 │   ├── cache/          # 运行缓存

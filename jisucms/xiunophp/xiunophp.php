@@ -27,7 +27,7 @@ if (!defined('VIEW_PATH') && !defined('THEME_PATH')) {
     define('VIEW_PATH', THEME_PATH); // backward compatibility alias for legacy plugins
 }
 defined('LOG_PATH') || define('LOG_PATH', ROOT_PATH.'runtime/log/');
-defined('PLUGIN_PATH') || define('PLUGIN_PATH', APP_PATH.'plugin/');
+defined('PLUGIN_PATH') || define('PLUGIN_PATH', ROOT_PATH.'plugin/');
 defined('LANG_PATH') || define('LANG_PATH', APP_PATH.'lang/');
 defined('RUNTIME_PATH') || define('RUNTIME_PATH', ROOT_PATH.'runtime/cache/');
 defined('RUNTIME_MODEL') || define('RUNTIME_MODEL', RUNTIME_PATH.APP_NAME.'_model/');
