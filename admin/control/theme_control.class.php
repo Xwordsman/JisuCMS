@@ -48,7 +48,7 @@ class theme_control extends admin_control {
 		$theme = R('theme', 'P');
 		$this->check_theme($theme);
 
-		if(_rmdir(ROOT_PATH.'view/'.$theme)) {
+		if(_rmdir(ROOT_PATH.'theme/'.$theme)) {
             // hook admin_theme_control_delete_success.php
 			E(0, lang('delete_successfully'));
 		}else{
@@ -63,12 +63,12 @@ class theme_control extends admin_control {
 			E(1, lang('theme_dir_no_empty'));
 		}elseif(preg_match('/\W/', $dir)) {
 			E(1, lang('theme_dir_no_safe'));
-		}elseif(!is_dir(ROOT_PATH.'view/'.$dir)) {
+		}elseif(!is_dir(ROOT_PATH.'theme/'.$dir)) {
 			E(1, lang('theme_dir_no_exists'));
 		}
 
         // 检测有 enable.php 文件，有则执行
-        $enable = ROOT_PATH.'view/'.$dir.'/enable.php';
+        $enable = ROOT_PATH.'theme/'.$dir.'/enable.php';
         if(is_file($enable)) include $enable;
 
         // hook admin_theme_control_check_theme_after.php
@@ -77,7 +77,7 @@ class theme_control extends admin_control {
 	// 读取所有主题
 	private function get_theme_all() {
         // hook admin_theme_control_get_theme_all_before.php
-		$dir = ROOT_PATH.'view/';
+		$dir = ROOT_PATH.'theme/';
 		$files = _scandir($dir);
 		$themes = array();
 		foreach($files as $file) {
@@ -89,7 +89,7 @@ class theme_control extends admin_control {
 
                 $img = $path.'/show.jpg';
                 if(is_file($img)){
-                    $themes[$file]['pic'] = "../view/{$file}/show.jpg";
+                    $themes[$file]['pic'] = "../theme/{$file}/show.jpg";
                 }else{
                     $themes[$file]['pic'] = "../static/admin/images/theme.jpg";
                 }

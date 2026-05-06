@@ -127,7 +127,7 @@ $err = 0;
                         }
                         echo '</td></tr>';
 
-                        $dirs = array(APP_NAME.'/config', 'runtime/log', 'runtime/cache', APP_NAME.'/plugin', 'view', 'upload');
+                        $dirs = array(APP_NAME.'/config', 'runtime/log', 'runtime/cache', APP_NAME.'/plugin', 'theme', 'upload');
                         foreach($dirs as $dir) {
                             $ret = _dir_write(ROOT_PATH.'/'.$dir, TRUE);
                             echo '<tr><td>/'.$dir.'/*</td><td>'.lang('writable').' ('.lang('unix_like').' 0777)</td><td>';

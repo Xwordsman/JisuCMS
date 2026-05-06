@@ -20,7 +20,12 @@ defined('CONFIG_PATH') || define('CONFIG_PATH', APP_PATH.'config/');
 defined('CONTROL_PATH') || define('CONTROL_PATH', APP_PATH.'control/');
 defined('BLOCK_PATH') || define('BLOCK_PATH', APP_PATH.'block/');
 defined('MODEL_PATH') || define('MODEL_PATH', APP_PATH.'model/');
-defined('VIEW_PATH') || define('VIEW_PATH', ROOT_PATH.'view/');
+// 前台使用 THEME_PATH 指向主题目录；后台在 admin/index.php 中先行定义 VIEW_PATH 指向后台模板目录
+// 为兼容仍硬编码 VIEW_PATH 的旧插件/主题，前台同时把 VIEW_PATH 别名到 THEME_PATH
+if (!defined('VIEW_PATH') && !defined('THEME_PATH')) {
+    define('THEME_PATH', ROOT_PATH.'theme/');
+    define('VIEW_PATH', THEME_PATH); // backward compatibility alias for legacy plugins
+}
 defined('LOG_PATH') || define('LOG_PATH', ROOT_PATH.'runtime/log/');
 defined('PLUGIN_PATH') || define('PLUGIN_PATH', APP_PATH.'plugin/');
 defined('LANG_PATH') || define('LANG_PATH', APP_PATH.'lang/');

@@ -30,7 +30,7 @@
 	<div id="jisu_trace_cont">
 		<ol>
 			<li><span><?php echo lang('model_trace'); ?>:</span> <?php echo MODEL_PATH;?></li>
-			<li><span><?php echo lang('view_trace'); ?>:</span> <?php echo VIEW_PATH.(isset($_ENV['_theme']) ? $_ENV['_theme'] : 'default').'/'; if(isset($_ENV['_tplname'])) { echo '<font color="red">'.$_ENV['_tplname'].'</font>'; } ?></li>
+			<li><span><?php echo lang('view_trace'); ?>:</span> <?php echo (defined('THEME_PATH') ? THEME_PATH : VIEW_PATH).(isset($_ENV['_theme']) ? $_ENV['_theme'] : 'default').'/'; if(isset($_ENV['_tplname'])) { echo '<font color="red">'.$_ENV['_tplname'].'</font>'; } ?></li>
 			<li><span><?php echo lang('control_trace'); ?>:</span> <?php echo CONTROL_PATH;?><font color="red"><?php echo $_GET['control'];?>_control.class.php</font></li>
 			<li><span><?php echo lang('logs_trace'); ?>:</span> <?php echo LOG_PATH;?></li>
 			<li><span><?php echo lang('script_filename_trace'); ?>:</span> <?php echo $_SERVER['SCRIPT_FILENAME'];?></li>

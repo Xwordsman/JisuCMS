@@ -29,7 +29,7 @@ body,div,ul,li,h1{margin:0;padding:0}
 	<h1><?php echo lang('basic_trace'); ?></h1>
 	<ul>
 		<li><span><?php echo lang('model_trace'); ?>:</span> <?php echo MODEL_PATH;?></li>
-		<li><span><?php echo lang('view_trace'); ?>:</span> <?php echo VIEW_PATH.(isset($_ENV['_theme']) ? $_ENV['_theme'] : 'default').'/'; ?></li>
+		<li><span><?php echo lang('view_trace'); ?>:</span> <?php echo (defined('THEME_PATH') ? THEME_PATH : VIEW_PATH).(isset($_ENV['_theme']) ? $_ENV['_theme'] : 'default').'/'; ?></li>
 		<li><span><?php echo lang('control_trace'); ?>:</span> <?php echo CONTROL_PATH;?><font color="red"><?php echo $_GET['control'];?>_control.class.php</font></li>
 		<li><span><?php echo lang('logs_trace'); ?>:</span> <?php echo LOG_PATH;?></li>
 	</ul>

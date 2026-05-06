@@ -12,13 +12,13 @@
 defined('ROOT_PATH') || exit('Access Denied');
 
 // 系统版本号
-define('JISUCMS_VERSION', '1.2.0');
+define('JISUCMS_VERSION', '1.3.0');
 
 // 发布日期（格式：YYYYMMDD）
-define('JISUCMS_RELEASE', '20260504');
+define('JISUCMS_RELEASE', '20260506');
 
 // 版本名称
-define('JISUCMS_VERSION_NAME', 'System Optimization');
+define('JISUCMS_VERSION_NAME', 'Theme Directory Rename');
 
 // 构建编号
-define('JISUCMS_BUILD', 3);
+define('JISUCMS_BUILD', 4);

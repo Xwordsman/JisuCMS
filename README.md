@@ -1,7 +1,7 @@
 # 极速CMS (JisuCMS)
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.1.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.3.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/php-%3E%3D5.4-brightgreen.svg" alt="PHP Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
 </p>
@@ -65,6 +65,7 @@ git clone https://github.com/Xwordsman/JisuCMS.git
 - `runtime/cache/` - 运行缓存目录
 - `runtime/log/` - 日志目录
 - `upload/` - 上传文件目录
+- `theme/` - 前台主题目录
 
 ### 3. 运行安装程序
 
@@ -81,6 +82,28 @@ git clone https://github.com/Xwordsman/JisuCMS.git
 - 删除或重命名 `install` 目录
 - 修改默认管理员密码
 - 配置文件权限
+
+### 5. 从旧版本升级（v1.2.0 → 主题目录改名）
+
+> 自当前版本起，**前台主题目录由 `view/` 重命名为 `theme/`**，以更准确地表达"主题"语义。后台模板目录 `admin/view/` 与安装模板目录 `install/view/` 保持不变。
+
+升级步骤：
+
+1. 备份原 `view/` 目录
+2. 将其整体重命名为 `theme/`（或新版本中已有的 `theme/` 与原 `view/` 内容合并）
+3. 删除 `runtime/cache/_jisucms.php` 与 `runtime/cache/jisucms_view/`（如存在）
+4. 后台 → 工具 → 清理缓存
+
+常量与函数变更：
+
+| 旧 | 新 | 说明 |
+|---|---|---|
+| `VIEW_PATH`（前台） | `THEME_PATH` | 仍保留 `VIEW_PATH` 作为前台别名，旧插件无需修改 |
+| `VIEW_PATH`（后台） | `VIEW_PATH` | 不变，仍指向 `admin/view/` |
+| `view_tpl_exists()` | `theme_tpl_exists()` | 旧函数名仍保留为别名 |
+| `runtime/cache/jisucms_view/` | `runtime/cache/jisucms_theme/` | 前台模板编译缓存子目录 |
+
+> 注：如果你的插件硬编码了 `'view/'` 子串拼接路径（而不是用 `VIEW_PATH` 常量），请改成 `'theme/'`。
 
 ## 📚 功能特性
 
@@ -181,7 +204,7 @@ jisucms/
 │   ├── css/            # 样式文件
 │   ├── js/             # 脚本文件
 │   └── images/         # 图片资源
-├── view/               # 前台模板
+├── theme/              # 前台主题（v1.2.x 起由 view/ 重命名为 theme/）
 │   └── default/        # 默认主题
 ├── upload/             # 上传文件
 ├── index.php           # 前台入口

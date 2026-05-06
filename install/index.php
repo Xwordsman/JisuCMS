@@ -228,15 +228,23 @@ if($do == 'lang') {
         $ret = unlink($runtime.'_jisucms.php');
         js_show(lang('clear').' runtime/cache/_jisucms.php ...'.lang('successfully'), 0);
     }
-    $tpmdir = array('_control', '_model', '_view');
-    foreach($tpmdir as $dir) {
-        $ret = _rmdir($runtime.'jisucms'.$dir);
-        js_show(lang('clear').' runtime/cache/jisucms'.$dir.' ...'.lang('successfully'), 0);
+    // 前台缓存子目录（v1.2.x 起 _view 重命名为 _theme，与 theme/ 目录保持一致）
+    $front_tpmdir = array('_control', '_model', '_theme', '_view'); // 兼容旧的 _view 缓存
+    foreach($front_tpmdir as $dir) {
+        $target = $runtime.'jisucms'.$dir;
+        if(is_dir($target)) {
+            $ret = _rmdir($target);
+            js_show(lang('clear').' runtime/cache/jisucms'.$dir.' ...'.lang('successfully'), 0);
+        }
     }
-    foreach($tpmdir as $dir) {
-        if($dir == '_model') continue;
-        $ret = _rmdir($runtime.'admin'.$dir);
-        js_show(lang('clear').' runtime/cache/admin'.$dir.' ...'.lang('successfully'), 0);
+    // 后台缓存子目录（仍使用 _view，因为后台模板目录未改名）
+    $admin_tpmdir = array('_control', '_view');
+    foreach($admin_tpmdir as $dir) {
+        $target = $runtime.'admin'.$dir;
+        if(is_dir($target)) {
+            $ret = _rmdir($target);
+            js_show(lang('clear').' runtime/cache/admin'.$dir.' ...'.lang('successfully'), 0);
+        }
     }
 
     // 初始插件配置

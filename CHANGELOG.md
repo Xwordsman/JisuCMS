@@ -15,6 +15,41 @@
 ### 修复
 - 待发布的问题修复
 
+## [1.3.0] - 2026-05-06
+
+### 变更
+- **重要变更**：前台主题目录由 `view/` 重命名为 `theme/`，语义更准确
+  - 后台模板目录 `admin/view/` 与安装模板目录 `install/view/` 保持不变
+  - 框架新增常量 `THEME_PATH`，前台代码统一使用 `THEME_PATH` 指向主题目录
+  - 后台模板路径常量仍为 `VIEW_PATH`（指向 `admin/view/`）
+- 新增函数 `theme_tpl_exists()`，替代原 `view_tpl_exists()`
+- 前台模板编译缓存子目录 `runtime/cache/jisucms_view/` 改为 `jisucms_theme/`
+- README 新增"从旧版本升级"小节，提供完整迁移指引
+
+### 兼容性
+- 前台保留 `VIEW_PATH` 作为 `THEME_PATH` 的别名，硬编码 `VIEW_PATH` 常量的旧插件无需修改即可继续工作
+- 保留 `view_tpl_exists()` 函数作为 `theme_tpl_exists()` 的别名
+- 安装/升级程序自动清理新旧两套缓存子目录（`_view`、`_theme`）
+
+### 升级须知
+- 物理重命名 `view/` → `theme/`，或将原 `view/` 内容合并到新版的 `theme/`
+- 删除 `runtime/cache/_jisucms.php` 与 `runtime/cache/jisucms_view/`（如存在）
+- 后台 → 工具 → 清理缓存
+- 若插件硬编码了字符串 `'view/'` 拼接路径（而非使用 `VIEW_PATH` 常量），请改为 `'theme/'`
+
+### 技术细节
+- 修改文件：
+  - `jisucms/xiunophp/xiunophp.php` - 新增 `THEME_PATH` 常量及 `VIEW_PATH` 兼容别名
+  - `jisucms/xiunophp/lib/view.class.php` - 模板根路径与缓存子目录前后台分流
+  - `jisucms/xiunophp/lib/base.func.php` - 新增 `theme_tpl_exists()`，保留 `view_tpl_exists()` 别名
+  - `jisucms/xiunophp/tpl/exception.php`、`tpl/sys_trace.php` - 调试页路径前后台兼容
+  - `jisucms/control/base_control.class.php` - 站点关闭模板检测改用 `THEME_PATH`
+  - `jisucms/model/runtime_model.class.php` - `$cfg['tpl']` URL 段 `view/` → `theme/`
+  - `admin/control/theme_control.class.php` - 主题管理 5 处路径更新
+  - `install/view/check_env.php` - 安装写权限检查目录更新
+  - `install/index.php` - 缓存清理兼容新旧子目录
+- 物理变更：根目录 `view/` 重命名为 `theme/`
+
 ## [1.2.0] - 2026-05-04
 
 ### 变更
@@ -81,7 +116,8 @@
 - 数据库：MySQL 5.5+
 - PHP版本：5.4+（推荐 7.0+）
 
-[Unreleased]: https://github.com/Xwordsman/JisuCMS/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/Xwordsman/JisuCMS/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/Xwordsman/JisuCMS/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/Xwordsman/JisuCMS/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/Xwordsman/JisuCMS/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/Xwordsman/JisuCMS/releases/tag/v1.0.0

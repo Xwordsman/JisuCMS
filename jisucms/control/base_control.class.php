@@ -127,7 +127,7 @@ class base_control extends control{
 
             // hook base_control_construct_close_website_after.php
 
-            if( !file_exists(VIEW_PATH.$_ENV['_theme'].'/'.$tpl) ){
+            if( !file_exists(THEME_PATH.$_ENV['_theme'].'/'.$tpl) ){
                 exit(lang('close_website_tips'));
             }
 

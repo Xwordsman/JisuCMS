@@ -923,11 +923,19 @@ function hashids_decrypt($str = ''){
 //加密解密函数 end
 
 //判断启用主题下的模板是否存在
-function view_tpl_exists($tpl = ''){
-    if(file_exists(VIEW_PATH.$_ENV['_theme'].'/'.$tpl)){
+function theme_tpl_exists($tpl = ''){
+    $base_path = defined('THEME_PATH') ? THEME_PATH : VIEW_PATH;
+    if(file_exists($base_path.$_ENV['_theme'].'/'.$tpl)){
         return $tpl;
     }else{
         return false;
+    }
+}
+
+// 兼容旧名（v1.2.0 之前为 view_tpl_exists），插件/主题升级期保留
+if (!function_exists('view_tpl_exists')) {
+    function view_tpl_exists($tpl = ''){
+        return theme_tpl_exists($tpl);
     }
 }
 

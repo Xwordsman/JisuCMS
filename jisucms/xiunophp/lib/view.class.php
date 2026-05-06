@@ -32,11 +32,14 @@ class view{
 	}
 
 	private function get_tplfile($filename) {
-		$view_dir = APP_NAME.($_ENV['_view_diy'] ? '_view_diy' : '_view').'/';
+		// 前台用 THEME_PATH（主题目录），后台仍用 VIEW_PATH（admin/view）；缓存子目录名同步区分
+		$base_path = defined('THEME_PATH') ? THEME_PATH : VIEW_PATH;
+		$suffix = defined('THEME_PATH') ? '_theme' : '_view';
+		$view_dir = APP_NAME.($_ENV['_view_diy'] ? $suffix.'_diy' : $suffix).'/';
 		$php_file = RUNTIME_PATH.$view_dir.$_ENV['_theme'].','.$filename.'.php';
 
 		if(!is_file($php_file) || DEBUG) {
-			$tpl_file = core::get_original_file($filename, VIEW_PATH.$_ENV['_theme'].'/');
+			$tpl_file = core::get_original_file($filename, $base_path.$_ENV['_theme'].'/');
 
 			if(!$tpl_file && DEBUG) {
                 $msg = lang('tpl_file_not_exists', array('tplfile'=>$_ENV['_theme'].'/'.$filename));
@@ -134,7 +137,8 @@ class view{
             $filename = $arr[0].'/inc-'.$arr[1];
         }
 
-		$tpl_file = core::get_original_file($filename, VIEW_PATH.$_ENV['_theme'].'/');
+		$base_path = defined('THEME_PATH') ? THEME_PATH : VIEW_PATH;
+		$tpl_file = core::get_original_file($filename, $base_path.$_ENV['_theme'].'/');
 
 		if(!$tpl_file) {
 		    if( DEBUG ){

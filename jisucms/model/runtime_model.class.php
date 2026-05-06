@@ -39,7 +39,7 @@ class runtime extends model {
 
 				empty($cfg['theme']) && $cfg['theme'] = 'default';  //主题
 
-				$cfg['tpl'] = $cfg['webdir'].'view/'.$cfg['theme'].'/'; //模板路径
+				$cfg['tpl'] = $cfg['webdir'].'theme/'.$cfg['theme'].'/'; //模板路径
 				$cfg['webroot'] = HTTP.$cfg['webdomain']; //完整域名，不带安装目录
 				$cfg['weburl'] = HTTP.$cfg['webdomain'].$cfg['webdir']; //完整域名，带安装目录
 
@@ -78,7 +78,7 @@ class runtime extends model {
         if($key == 'cfg' && !empty($this->data['cfg']['open_mobile_view']) && is_mobile()==1){
             // hook runtime_model_xget_cfg_mobile_before.php
             $this->data['cfg']['theme'] =  isset($this->data['cfg']['mobile_view']) ? $this->data['cfg']['mobile_view'] : 'mobile';
-            $this->data['cfg']['tpl'] = $this->data['cfg']['webdir'].'view/'.$this->data['cfg']['theme'].'/';
+            $this->data['cfg']['tpl'] = $this->data['cfg']['webdir'].'theme/'.$this->data['cfg']['theme'].'/';
             $this->data['cfg']['weburl'] = HTTP.$_SERVER['HTTP_HOST'].$this->data['cfg']['webdir'];
             // hook runtime_model_xget_cfg_mobile_after.php
         }
