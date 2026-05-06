@@ -12,13 +12,13 @@
 defined('ROOT_PATH') || exit('Access Denied');
 
 // 系统版本号
-define('JISUCMS_VERSION', '1.4.0');
+define('JISUCMS_VERSION', '1.5.0');
 
 // 发布日期（格式：YYYYMMDD）
 define('JISUCMS_RELEASE', '20260506');
 
 // 版本名称
-define('JISUCMS_VERSION_NAME', 'Plugin Directory Hoisted');
+define('JISUCMS_VERSION_NAME', 'Lean Core & Plugin Hooks');
 
 // 构建编号
-define('JISUCMS_BUILD', 5);
+define('JISUCMS_BUILD', 6);

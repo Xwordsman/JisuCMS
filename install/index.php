@@ -97,7 +97,7 @@ if($do == 'lang') {
     $dbuser = isset($_POST['dbuser']) ? trim($_POST['dbuser']) : '';
     $dbpw = isset($_POST['dbpw']) ? trim($_POST['dbpw']) : '';
     $dbname = isset($_POST['dbname']) ? trim($_POST['dbname']) : '';
-    $charset = 'utf8';
+    $charset = 'utf8mb4';
     $tablepre = isset($_POST['dbpre']) ? trim($_POST['dbpre']) : '';
     $adm_user = isset($_POST['adm_user']) ? trim($_POST['adm_user']) : '';
     $adm_pass = isset($_POST['adm_pass']) ? trim(str_replace(' ', '', $_POST['adm_pass'])) : '';
@@ -137,10 +137,10 @@ if($do == 'lang') {
         'webname' => '极速CMS',
         'webdomain' => $webdomain,
         'webdir' => $webdir,
-        'webmail' => 'admin@qq.com',
-        'webqq'=>'',
-        'webweixin'=>'',
-        'webtel'=>'',
+        'email' => 'admin@qq.com',
+        'qq'=>'',
+        'wechat'=>'',
+        'phone'=>'',
         'tongji' => '',
         'beian' => '',
         'copyright' => '底部版权信息',
@@ -195,9 +195,9 @@ if($do == 'lang') {
         'link_space_pre' => 'space/',
         'link_space_end' => '/',
 
-        'up_img_ext' => 'jpg,jpeg,gif,png,webp',
+        'up_img_ext' => 'jpg,jpeg,gif,png,webp,bmp,heic,heif',
         'up_img_max_size' => '3074',
-        'up_file_ext' => 'zip,gz,rar,iso,xls,xlsx,csv,doc,docx,ppt,wps,txt,pdf',
+        'up_file_ext' => 'zip,gz,rar,7z,tar,iso,xls,xlsx,csv,doc,docx,ppt,pptx,wps,txt,md,pdf,mp3,mp4',
         'up_file_max_size' => '20480',
         'thumb_type' => 2,
         'thumb_quality' => 90,

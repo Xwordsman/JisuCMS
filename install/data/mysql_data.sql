@@ -13,4 +13,4 @@ INSERT INTO `pre_models` (`mid`, `name`, `tablename`, `index_tpl`, `cate_tpl`, `
 (2, '文章', 'article', 'article_index.htm', 'article_list.htm', 'article_show.htm', 1, 160, 120, 'fa fa-book');
 
 INSERT INTO `pre_kv` (`k`, `v`, `expiry`) VALUES
-('link_keywords', '["tag","tag_top","tag_all","comment","index","sitemap","admin","adminpanel","user","space","login","logout","register","static","upload","log","runtime","install","attach","special","search","so"]', 0);
+('link_keywords', '["tag","tag_top","tag_all","comment","index","admin","adminpanel","user","space","login","logout","register","static","upload","log","runtime","install","attach","special","search","so"]', 0);

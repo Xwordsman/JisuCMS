@@ -545,7 +545,7 @@ class db_pdo_mysql implements db_interface {
 			}
 			$sep = ",\n";
 		}
-		$sql .= ") ENGINE=$engineer DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;";
+		$sql .= ") ENGINE=$engineer DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
 		return $this->query($sql, $this->wlink);
 	}
 
@@ -589,7 +589,7 @@ class db_pdo_mysql implements db_interface {
 	 * @param string $engine	数据库引擎
 	 * @return resource
 	 */
-	public function connect($host, $port, $user, $pass, $name, $charset = 'utf8', $engine = '') {
+	public function connect($host, $port, $user, $pass, $name, $charset = 'utf8mb4', $engine = '') {
 		if(strpos($host, ':') !== FALSE) {
 			list($host, $port) = explode(':', $host);
 		} else {

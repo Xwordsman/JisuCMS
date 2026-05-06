@@ -183,7 +183,7 @@ class db_mysqli implements db_interface {
             $sql .= "`name` char(32) NOT NULL default '',";
             $sql .= "`maxid` int(10) unsigned NOT NULL default '0',";
             $sql .= "PRIMARY KEY (`name`)";
-            $sql .= ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci";
+            $sql .= ") ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
             $this->query($sql, $this->xlink);
         }else{
             throw new Exception('framework_maxid error, mysql_error:'.mysqli_error($this->xlink));
@@ -233,7 +233,7 @@ class db_mysqli implements db_interface {
             $sql .= "`name` char(32) NOT NULL default '',";
             $sql .= "`count` int(10) unsigned NOT NULL default '0',";
             $sql .= "PRIMARY KEY (`name`)";
-            $sql .= ") ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci";
+            $sql .= ") ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
             $this->query($sql, $this->xlink);
         }else{
             throw new Exception('framework_cout error, mysql_error:'.mysqli_error($this->xlink));
@@ -545,7 +545,7 @@ class db_mysqli implements db_interface {
             }
             $sep = ",\n";
         }
-        $sql .= ") ENGINE=$engineer DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;";
+        $sql .= ") ENGINE=$engineer DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
         return $this->query($sql, $this->wlink);
     }
 
@@ -574,7 +574,7 @@ class db_mysqli implements db_interface {
      * @param string $engine	数据库引擎
      * @return resource
      */
-    public function connect($host, $user, $pass, $name, $charset = 'utf8', $engine = '') {
+    public function connect($host, $user, $pass, $name, $charset = 'utf8mb4', $engine = '') {
         $link = mysqli_connect($host, $user, $pass,$name);
         if(!$link) {
             throw new Exception(mysqli_error($link));

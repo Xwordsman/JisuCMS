@@ -39,6 +39,7 @@ return array(
     'page'=>'Page',
     'page_current'=>'page {page}',
     'url_suffix'=>'URL Suffix',
+    'url_suffix_tips'=>'Suffix appended to rewritten URLs. Common values: .html, .htm, / (trailing slash); leave empty for no suffix. Clear cache after changes.',
 
     'yes'=>'Yes',
     'no'=>'No',

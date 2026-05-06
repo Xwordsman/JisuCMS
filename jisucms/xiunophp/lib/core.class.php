@@ -537,7 +537,18 @@ class core{
 	}
 
 	/**
-	 * 解析启用插件目录，是否有 hook ， 以及插件目录hook文件夹下面是否有hook
+	 * 解析启用插件目录，按以下顺序查找 hook 文件并合并执行：
+	 *   plugin/<p>/<hook>                — 插件根（向后兼容）
+	 *   plugin/<p>/hook/<hook>           — 通用 hook 子目录（向后兼容）
+	 *   plugin/<p>/hook_admin/<hook>     — 后台 hook
+	 *   plugin/<p>/hook_control/<hook>   — 前台控制器 hook
+	 *   plugin/<p>/hook_model/<hook>     — 模型 hook
+	 *   plugin/<p>/hook_block/<hook>     — block 区块 hook
+	 *   plugin/<p>/hook_theme/<hook>     — 主题/前台模板 hook
+	 *   plugin/<p>/hook_lang/<hook>      — 语言相关 hook
+	 *
+	 * 多个目录命中同名 hook 文件时，会按上述顺序依次合并执行。
+	 *
 	 * @param array $matches 参数数组
 	 * @return string
 	 */
@@ -548,19 +559,27 @@ class core{
 		$plugins = core::get_plugins();
 		if(empty($plugins['enable'])) return $str;
 
+		// hook 查找子目录列表（按优先级）
+		static $hook_dirs = array(
+			'',              // 插件根（向后兼容）
+			'hook/',         // 通用（向后兼容）
+			'hook_admin/',
+			'hook_control/',
+			'hook_model/',
+			'hook_block/',
+			'hook_theme/',
+			'hook_lang/',
+		);
+
 		$plugin_enable = array_keys($plugins['enable']);
 		foreach($plugin_enable as $p) {
-			$file = PLUGIN_PATH.$p.'/'.$matches[1];
-			if( is_file($file) ){
-                $s = file_get_contents($file);
-                $str .= self::clear_code($s);
-            }
-			//插件文件夹下的 hook文件夹
-            $file = PLUGIN_PATH.$p.'/hook/'.$matches[1];
-            if( is_file($file) ){
-                $s = file_get_contents($file);
-                $str .= self::clear_code($s);
-            }
+			foreach($hook_dirs as $sub) {
+				$file = PLUGIN_PATH.$p.'/'.$sub.$matches[1];
+				if( is_file($file) ){
+					$s = file_get_contents($file);
+					$str .= self::clear_code($s);
+				}
+			}
 		}
 		return $str;
 	}

@@ -1,6 +1,16 @@
 <?php
 defined('ROOT_PATH') || exit;
 
+// 大数显示格式化辅助函数：超 100 万显示 "100W+"，超 10 万显示 "10W+"，否则原值
+if (!function_exists('block_data_total_format')) {
+    function block_data_total_format($n) {
+        $n = (int)$n;
+        if ($n > 1000000) return '100W+';
+        if ($n > 100000)  return '10W+';
+        return $n;
+    }
+}
+
 /**
  * 数据统计模块
  * @param int mid 模型ID 必填 默认为 2
@@ -46,42 +56,32 @@ function block_data_total($conf) {
 	switch ($source){
         case 'content':
             $run->cms_content->table = 'cms_'.$table;
-            $total['content'] = $run->cms_content->count();
+            $total['content'] = block_data_total_format($run->cms_content->count());
             break;
         case 'comment':
             $total['comment'] = $run->cms_content_comment->find_count(array('mid'=>$mid));
             break;
         case 'tag':
             $run->cms_content_tag->table = 'cms_'.$table.'_tag';
-            $total['tag'] = $run->cms_content_tag->count();
+            $total['tag'] = block_data_total_format($run->cms_content_tag->count());
             break;
         case 'views':
             $table_prefix = $_ENV['_config']['db']['master']['tablepre'];
             $sql = "SELECT SUM(views) as views FROM {$table_prefix}cms_{$table}_views";
             $res = $run->db->fetch_first($sql);
-            if(isset($res['views'])){
-                if($res['views'] > 1000000){
-                    $total['views'] = '100W+';
-                }elseif ($res['views'] > 100000){
-                    $total['views'] = '10W+';
-                }else{
-                    $total['views'] = (int)$res['views'];
-                }
-            }else{
-                $total['views'] = 0;
-            }
+            $total['views'] = isset($res['views']) ? block_data_total_format($res['views']) : 0;
             break;
         case 'category':
             $total['category'] = $run->category->find_count(array('mid'=>$mid));
             break;
         default:
             $run->cms_content->table = 'cms_'.$table;
-            $total['content'] = $run->cms_content->count();
+            $total['content'] = block_data_total_format($run->cms_content->count());
 
             $total['comment'] = $run->cms_content_comment->find_count(array('mid'=>$mid));
 
             $run->cms_content_tag->table = 'cms_'.$table.'_tag';
-            $total['tag'] = $run->cms_content_tag->count();
+            $total['tag'] = block_data_total_format($run->cms_content_tag->count());
 
             $total['category'] = $run->category->find_count(array('mid'=>$mid));
 
@@ -89,17 +89,7 @@ function block_data_total($conf) {
                 $table_prefix = $_ENV['_config']['db']['master']['tablepre'];
                 $sql = "SELECT SUM(views) as views FROM {$table_prefix}cms_{$table}_views";
                 $res = $run->db->fetch_first($sql);
-                if(isset($res['views'])){
-                    if($res['views'] > 1000000){
-                        $total['views'] = '100W+';
-                    }elseif ($res['views'] > 100000){
-                        $total['views'] = '10W+';
-                    }else{
-                        $total['views'] = (int)$res['views'];
-                    }
-                }else{
-                    $total['views'] = 0;
-                }
+                $total['views'] = isset($res['views']) ? block_data_total_format($res['views']) : 0;
             }
 
     }

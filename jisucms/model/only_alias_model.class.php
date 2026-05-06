@@ -15,7 +15,7 @@ class only_alias extends model {
 
 	// 检查别名是否已被使用
 	// 1.先排除 tag comment space 的别名
-	// 2.再排除保留关键词 (tag tag_top comment index sitemap admin user space)
+	// 2.再排除保留关键词（来自 kv 表 link_keywords，含 tag tag_top comment index admin user space 等）
 	// 3.再排除分类表的 alias 字段
 	// 4.排除only_alias表的 alias 字段
 	public function check_alias($alias, $contentalias = 0) {

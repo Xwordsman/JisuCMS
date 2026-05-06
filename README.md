@@ -1,7 +1,7 @@
 # 极速CMS (JisuCMS)
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.4.0-blue.svg" alt="Version">
+  <img src="https://img.shields.io/badge/version-1.5.0-blue.svg" alt="Version">
   <img src="https://img.shields.io/badge/php-%3E%3D5.4-brightgreen.svg" alt="PHP Version">
   <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License">
 </p>

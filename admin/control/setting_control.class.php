@@ -10,10 +10,10 @@ class setting_control extends admin_control{
             $input['webname'] = form::get_text('webname', $cfg['webname'], '', 'required="required" lay-verify="required"');
             $input['webdomain'] = form::get_text('webdomain', $cfg['webdomain'], '', 'required="required" lay-verify="required"');
             $input['webdir'] = form::get_text('webdir', $cfg['webdir'], '', 'required="required" lay-verify="required" maxlength="50"');
-            $input['webmail'] = form::get_text('webmail', $cfg['webmail']);
-            $input['webqq'] = form::get_text('webqq', $cfg['webqq']);
-            $input['webweixin'] = form::get_text('webweixin', $cfg['webweixin']);
-            $input['webtel'] = form::get_text('webtel', $cfg['webtel']);
+            $input['email'] = form::get_text('email', $cfg['email']);
+            $input['qq'] = form::get_text('qq', $cfg['qq']);
+            $input['wechat'] = form::get_text('wechat', $cfg['wechat']);
+            $input['phone'] = form::get_text('phone', $cfg['phone']);
             $input['tongji'] = form::get_textarea('tongji', $cfg['tongji']);
             $input['beian'] = form::get_text('beian', $cfg['beian']);
             $input['copyright'] = form::get_textarea('copyright', $cfg['copyright']);
@@ -36,10 +36,10 @@ class setting_control extends admin_control{
             $this->kv->xset('webname', R('webname', 'P'), 'cfg');
             $this->kv->xset('webdomain', R('webdomain', 'P'), 'cfg');
             $this->kv->xset('webdir', $webdir, 'cfg');
-            $this->kv->xset('webmail', R('webmail', 'P'), 'cfg');
-            $this->kv->xset('webqq', R('webqq', 'P'), 'cfg');
-            $this->kv->xset('webweixin', R('webweixin', 'P'), 'cfg');
-            $this->kv->xset('webtel', R('webtel', 'P'), 'cfg');
+            $this->kv->xset('email', R('email', 'P'), 'cfg');
+            $this->kv->xset('qq', R('qq', 'P'), 'cfg');
+            $this->kv->xset('wechat', R('wechat', 'P'), 'cfg');
+            $this->kv->xset('phone', R('phone', 'P'), 'cfg');
             $this->kv->xset('tongji', R('tongji', 'P'), 'cfg');
             $this->kv->xset('beian', R('beian', 'P'), 'cfg');
             $this->kv->xset('copyright', R('copyright', 'P'), 'cfg');
@@ -411,102 +411,6 @@ class setting_control extends admin_control{
         }
     }
 
-    //站点地图设置
-    public function sitemap(){
-        // hook admin_setting_control_sitemap_before.php
-        if(empty($_POST)) {
-            $sitemap = $this->kv->xget('sitemap');
-            $input = array();
-
-            $changefreq_arr = array(
-                'always'=>'一直更新',
-                'hourly'=>'小时',
-                'daily'=>'天',
-                'weekly'=>'周',
-                'monthly'=>'月',
-                'yearly'=>'年',
-                'never'=>'从不更新',
-            );
-            $priority_arr = array(
-                '1'=>1, '0.9'=>0.9,'0.8'=>0.8,'0.7'=>0.7,'0.6'=>0.6, '0.5'=>0.5, '0.4'=>0.4,'0.3'=>0.3,'0.2'=>0.2,'0.1'=>0.1,
-            );
-
-            $baidu_changefreq_index = isset($sitemap['baidu_changefreq_index']) ? $sitemap['baidu_changefreq_index'] : 'daily';
-            $baidu_priority_index = isset($sitemap['baidu_priority_index']) ? $sitemap['baidu_priority_index'] : '1';
-            $input['baidu_changefreq_index'] = form::layui_loop('select', 'baidu_changefreq_index', $changefreq_arr, $baidu_changefreq_index);
-            $input['baidu_priority_index'] = form::layui_loop('select', 'baidu_priority_index', $priority_arr, $baidu_priority_index);
-
-            $baidu_changefreq_index = isset($sitemap['baidu_changefreq_category']) ? $sitemap['baidu_changefreq_category'] : 'daily';
-            $baidu_priority_index = isset($sitemap['baidu_priority_category']) ? $sitemap['baidu_priority_category'] : '0.9';
-            $input['baidu_changefreq_category'] = form::layui_loop('select', 'baidu_changefreq_category', $changefreq_arr, $baidu_changefreq_index);
-            $input['baidu_priority_category'] = form::layui_loop('select', 'baidu_priority_category', $priority_arr, $baidu_priority_index);
-
-            //内容模型的 内容+tag
-            $models_arr = $this->models->find_fetch(array(), array('mid' => 1));
-            $models = array();
-            foreach ($models_arr as $k=>$v) {
-                $mid = $v['mid'];
-                if ($mid > 1) {
-
-                    $baidu_changefreq_content = isset($sitemap['baidu_changefreq_content_'.$mid]) ? $sitemap['baidu_changefreq_content_'.$mid] : 'daily';
-                    $baidu_priority_content = isset($sitemap['baidu_priority_content_'.$mid]) ? $sitemap['baidu_priority_content_'.$mid] : '0.8';
-                    $content_count = isset($sitemap['content_count_'.$mid]) ? $sitemap['content_count_'.$mid] : 200;
-
-                    $baidu_changefreq_tag = isset($sitemap['baidu_changefreq_tag_'.$mid]) ? $sitemap['baidu_changefreq_tag_'.$mid] : 'daily';
-                    $baidu_priority_tag = isset($sitemap['baidu_priority_tag_'.$mid]) ? $sitemap['baidu_priority_tag_'.$mid] : '0.7';
-                    $tag_count = isset($sitemap['tag_count_'.$mid]) ? $sitemap['tag_count_'.$mid] : 100;
-
-                    $input['baidu_changefreq_content_'.$mid] = form::layui_loop('select', 'baidu_changefreq_content_'.$mid, $changefreq_arr, $baidu_changefreq_content);
-                    $input['baidu_priority_content_'.$mid] = form::layui_loop('select', 'baidu_priority_content_'.$mid, $priority_arr, $baidu_priority_content);
-                    $input['content_count_'.$mid] = form::get_number('content_count_'.$mid, $content_count);
-
-                    $input['baidu_changefreq_tag_'.$mid] = form::layui_loop('select', 'baidu_changefreq_tag_'.$mid, $changefreq_arr, $baidu_changefreq_tag);
-                    $input['baidu_priority_tag_'.$mid] = form::layui_loop('select', 'baidu_priority_tag_'.$mid, $priority_arr, $baidu_priority_tag);
-                    $input['tag_count_'.$mid] = form::get_number('tag_count_'.$mid, $tag_count);
-
-                    $models[$mid] = $v['name'];
-                }else{
-                    unset($models_arr[$k]);
-                }
-            }
-
-            // hook admin_setting_control_sitemap_after.php
-            $this->assign('models_arr', $models_arr);
-            $this->assign('input', $input);
-            $this->display();
-        }else{
-            _trim($_POST);
-
-            //首页和分类页
-            $arr = array(
-                'baidu_changefreq_index'=>R('baidu_changefreq_index', 'P'),
-                'baidu_priority_index'=>R('baidu_priority_index', 'P'),
-                'baidu_changefreq_category'=>R('baidu_changefreq_category', 'P'),
-                'baidu_priority_category'=>R('baidu_priority_category', 'P'),
-            );
-
-            //内容模型的 内容+tag
-            $models_arr = $this->models->find_fetch(array(), array('mid' => 1));
-            foreach ($models_arr as $v) {
-                $mid = $v['mid'];
-                if ($mid > 1) {
-                    $arr['baidu_changefreq_content_'.$mid] = R('baidu_changefreq_content_'.$mid, 'P');
-                    $arr['baidu_priority_content_'.$mid] = R('baidu_priority_content_'.$mid, 'P');
-                    $arr['content_count_'.$mid] = (int)R('content_count_'.$mid, 'P');
-
-                    $arr['baidu_changefreq_tag_'.$mid] = R('baidu_changefreq_tag_'.$mid, 'P');
-                    $arr['baidu_priority_tag_'.$mid] = R('baidu_priority_tag_'.$mid, 'P');
-                    $arr['tag_count_'.$mid] = (int)R('tag_count_'.$mid, 'P');
-                }
-            }
-
-            // hook admin_setting_control_sitemap_post_after.php
-
-            $this->kv->set('sitemap', $arr);
-            E(0, lang('edit_successfully'));
-        }
-    }
-
     //用户设置
     public function user(){
         // hook admin_setting_control_user_before.php
@@ -849,6 +753,9 @@ class setting_control extends admin_control{
             $spider_user_agent = isset($_ENV['_config']['spider_user_agent']) ? $_ENV['_config']['spider_user_agent'] : '';
             $input['spider_user_agent'] = form::get_text('spider_user_agent', $spider_user_agent);
 
+            $url_suffix = isset($_ENV['_config']['url_suffix']) ? $_ENV['_config']['url_suffix'] : '.html';
+            $input['url_suffix'] = form::get_text('url_suffix', $url_suffix);
+
             $cfg = $this->kv->xget('cfg');
             $arr = array('1'=>lang('yes'),'0'=>lang('no'));
             $close_website = isset($cfg['close_website']) ? (int)$cfg['close_website'] : 0;
@@ -896,7 +803,7 @@ class setting_control extends admin_control{
             $lang_admin = R('lang_admin','P');
             $spider_user_agent = R('spider_user_agent','P');
 
-            //$url_suffix = R('url_suffix','P');
+            $url_suffix = R('url_suffix','P');
 
             $file = CONFIG_PATH.'config.inc.php';
             $s = file_get_contents($file);
@@ -908,7 +815,7 @@ class setting_control extends admin_control{
             $s = preg_replace("#'lang' => '[\w-]*',#", "'lang' => '".addslashes($lang)."',", $s);
             $s = preg_replace("#'admin_lang' => '[\w-]*',#", "'admin_lang' => '".addslashes($lang_admin)."',", $s);
             $s = preg_replace("#'spider_user_agent' => '[\w,-]*',#", "'spider_user_agent' => '".addslashes($spider_user_agent)."',", $s);
-            //$s = preg_replace("#'url_suffix' => '(.)*',#", "'url_suffix' => '".addslashes($url_suffix)."',", $s);
+            $s = preg_replace("#'url_suffix' => '[^']*',#", "'url_suffix' => '".addslashes($url_suffix)."',", $s);
 
             // hook admin_setting_control_other_post_after.php
 

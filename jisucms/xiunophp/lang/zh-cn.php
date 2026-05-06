@@ -39,6 +39,7 @@ return array(
     'page'=>'页',
     'page_current'=>'第{page}页',
     'url_suffix'=>'URL后缀',
+    'url_suffix_tips'=>'用于伪静态 URL 末尾的后缀。常用：.html、.htm、/（结尾斜杠）；留空表示无后缀。修改后建议清理缓存。',
 
     'yes'=>'是',
     'no'=>'否',

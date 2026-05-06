@@ -38,7 +38,7 @@ $_ENV['_config'] = array(
                 'user' => 'root',
                 'password' => '',
                 'name' => 'jisucms',
-                'charset' => 'utf8',
+                'charset' => 'utf8mb4',
                 'tablepre' => 'pre_',
                 'engine'=>'MyISAM',
             ),

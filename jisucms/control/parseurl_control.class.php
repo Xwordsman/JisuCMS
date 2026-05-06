@@ -37,14 +37,8 @@ class parseurl_control extends control{
 
             // hook parseurl_control_index_rewrite_before.php
 
-            //站点地图
-            $sitemap_uri = array('sitemap.xml', 'sitemap.html', 'sitemap.txt');
-            if(in_array($uri, $sitemap_uri)){
-                $u_arr = explode('.', $uri);
-                $_GET['control'] = 'sitemap';
-                $_GET['action'] = $u_arr[1];
-                return;
-            }
+            // 注：sitemap 前台路由（sitemap.xml/html/txt）已移除，
+            // 未来可通过插件 hook parseurl_control_index_rewrite_before.php 重新注册。
 
             // hook parseurl_control_index_link_cate_before.php
             $r = $this->category_url($cfg, $uri);
