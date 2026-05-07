@@ -40,6 +40,9 @@ class parseurl_control extends control{
             // 注：sitemap 前台路由（sitemap.xml/html/txt）已移除，
             // 未来可通过插件 hook parseurl_control_index_rewrite_before.php 重新注册。
 
+            $r = $this->api_url($uri);
+            if($r){return;}
+
             // hook parseurl_control_index_link_cate_before.php
             $r = $this->category_url($cfg, $uri);
             if($r){return;}
@@ -97,7 +100,7 @@ class parseurl_control extends control{
 
             // hook parseurl_control_index_rewrite_after.php
         }
-        //伪静态结束------------------------------------------------------------------------------------------------------
+    //伪静态结束------------------------------------------------------------------------------------------------------
 
         // 伪静态时，如果 $uri 有值，但没有解析到相关 $_GET 时，就提示404
         if(empty($_GET) && isset($uri) && !empty($uri)) {
@@ -115,6 +118,24 @@ class parseurl_control extends control{
     }
 
     //---------------------------------------------------------------------- 以下是各模块URL解析的具体函数实现
+
+    protected function api_url($uri = ''){
+        $uri = trim($uri, '/');
+        if(strpos($uri, 'api/v1/') !== 0) return false;
+        $arr = explode('/', $uri);
+        $_GET['control'] = 'api';
+        $_GET['action'] = 'index';
+        $_GET['resource'] = isset($arr[2]) ? $arr[2] : 'site';
+        $_GET['id'] = isset($arr[3]) && preg_match($this->integer_pattern, $arr[3]) ? (int)$arr[3] : 0;
+        if($_GET['resource'] == 'categories' && !empty($_GET['id'])) {
+            $_GET['resource'] = 'category';
+            $_GET['cid'] = $_GET['id'];
+        } elseif($_GET['resource'] == 'contents' && !empty($_GET['id'])) {
+            $_GET['resource'] = 'content';
+            if(isset($arr[4]) && preg_match($this->integer_pattern, $arr[4])) $_GET['mid'] = (int)$arr[4];
+        }
+        return true;
+    }
 
     //模型页URL解析
     protected function model_url($cfg = array(), $uri = ''){

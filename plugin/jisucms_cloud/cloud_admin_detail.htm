@@ -1,0 +1,67 @@
+{inc:header.htm}
+<style>
+    pre.cloud-json {white-space: pre-wrap; word-break: break-all; background: #f8f8f8; padding: 12px; border-radius: 4px;}
+</style>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-card">
+            <div class="layui-card-header">站点信息</div>
+            <div class="layui-card-body">
+                <table class="layui-table">
+                    <colgroup><col width="160"><col></colgroup>
+                    <tbody>
+                    <tr><td>站点ID</td><td>{$site[cloud_site_id]}</td></tr>
+                    <tr><td>域名</td><td>{$site[domain]}</td></tr>
+                    <tr><td>CMS版本</td><td>{$site[jisucms_version]}</td></tr>
+                    <tr><td>PHP版本</td><td>{$site[php_version]}</td></tr>
+                    <tr><td>MySQL版本</td><td>{$site[mysql_version]}</td></tr>
+                    <tr><td>操作系统</td><td>{$site[os]}</td></tr>
+                    <tr><td>语言</td><td>{$site[language]}</td></tr>
+                    <tr><td>当前主题</td><td>{$site[theme_active]}</td></tr>
+                    <tr><td>启用插件</td><td>{$site[plugins_active_text]}</td></tr>
+                    <tr><td>安装时间</td><td>{$site[cloud_site_installed_at_text]}</td></tr>
+                    <tr><td>首次连接</td><td>{$site[first_connect_at_text]}</td></tr>
+                    <tr><td>最后连接</td><td>{$site[last_connect_at_text]}</td></tr>
+                    <tr><td>连接次数</td><td>{$site[connect_count]}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">最近一次载荷</div>
+            <div class="layui-card-body"><pre class="cloud-json">{$site[last_payload_text]}</pre></div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">最近一次响应</div>
+            <div class="layui-card-body"><pre class="cloud-json">{$site[latest_response_text]}</pre></div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">连接日志</div>
+            <div class="layui-card-body"><table class="layui-hide" id="log-table"></table></div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    layui.use(['table'], function () {
+        var table = layui.table;
+        table.render({
+            elem: '#log-table',
+            url: 'index.php?cloud_admin-log_list-cloud_site_id-{$site[cloud_site_id]}',
+            height: 'full-520',
+            defaultToolbar: ['filter', 'exports', 'print'],
+            cellMinWidth: 80,
+            cols: [[
+                {field: 'id', width: 90, title: 'ID', align: 'center'},
+                {field: 'domain', minWidth: 180, title: '域名'},
+                {field: 'jisucms_version', width: 120, title: 'CMS版本'},
+                {field: 'event_type', width: 120, title: '事件'},
+                {field: 'dateline_text', width: 170, title: '时间'}
+            ]],
+            limits: window.adminListLimits || [10, 15, 20, 25, 50, 100],
+            limit: window.adminListLimit || 15,
+            page: true
+        });
+    });
+</script>
+</body>
+</html>

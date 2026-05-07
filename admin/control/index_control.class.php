@@ -12,11 +12,18 @@ class index_control extends admin_control{
 	// 后台首页
 	public function index() {
         // hook admin_index_control_index_before.php
+        $this->cloud_service->ensure_identity();
         $cfg = $this->kv->xget('cfg');
 
         // hook admin_index_control_index_after.php
         $this->assign('cfg', $cfg);
         $this->display();
+        if(function_exists('fastcgi_finish_request')) {
+            @fastcgi_finish_request();
+        }
+        try {
+            $this->cloud_service->maybe_connect();
+        } catch(Exception $e) {}
 	}
 
 	// 后台登录

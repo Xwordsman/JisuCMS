@@ -124,6 +124,35 @@
 					<div class="layui-form-mid layui-word-aux">{lang:url_suffix_tips}</div>
 				</div>
 			</div>
+			<hr/>
+			<div class="layui-form-item">
+				<label class="layui-form-label">API开关</label>
+				<div class="layui-input-block">
+					{$input[api_open]}
+					<div class="layui-form-mid layui-word-aux">关闭后前台 API 将返回 api closed</div>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">API跨域</label>
+				<div class="layui-input-block">
+					{$input[api_allow_origin]}
+					<div class="layui-form-mid layui-word-aux">留空表示不额外输出 CORS，填写 * 或指定域名</div>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">API分页上限</label>
+				<div class="layui-input-inline">
+					{$input[api_limit]}
+				</div>
+				<div class="layui-form-mid layui-word-aux">建议不超过 50，系统最大限制为 100</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">API限流</label>
+				<div class="layui-input-inline">
+					{$input[api_rate_limit]}
+				</div>
+				<div class="layui-form-mid layui-word-aux">同一 IP 每分钟最大请求数，0 表示关闭限流</div>
+			</div>
 			{hook:admin_setting_other_after.htm}
 			<div class="layui-form-item">
 				<div class="layui-input-block">

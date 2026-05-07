@@ -132,6 +132,7 @@ if($do == 'lang') {
     $webdomain = empty($_SERVER['HTTP_HOST']) ? $_SERVER['SERVER_NAME'] : $_SERVER['HTTP_HOST'];
     $webdir = get_webdir();
     $weburl = http().$webdomain.$webdir;
+    $cloud_site_fingerprint = hash('sha256', implode('|', array(ROOT_PATH, $dbhost, $dbname, $dbport)));
 
     $cfg = array(
         'webname' => '极速CMS',
@@ -210,6 +211,17 @@ if($do == 'lang') {
         'url_path'=>0,                      //0表示绝对URL，1表示相对URL
         'admin_list_limits' => '15,10,20,25,50,100', //后台列表分页可选项，第一项为默认每页条数
         'upload_filename_style' => 'uuid', //附件命名风格：uuid / uuid_compact / legacy
+        'cloud_site_id' => random(32, 2, '0123456789abcdef'),
+        'cloud_site_fingerprint' => $cloud_site_fingerprint,
+        'cloud_site_installed_at' => time(),
+        'cloud_last_connect_at' => 0,
+        'cloud_last_response' => '',
+        'cloud_api_url' => 'https://www.jisucms.com/api/v1/cloud/connect',
+        'api_open' => 0,
+        'api_allow_origin' => '',
+        'api_limit' => 50,
+        'api_cache' => 60,
+        'api_rate_limit' => 120,
     );
 
     //写数据库操作

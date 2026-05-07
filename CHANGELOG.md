@@ -15,6 +15,67 @@
 ### 修复
 - 待发布的问题修复
 
+## [1.7.0] - 2026-05-07
+
+### 新增
+1. **新增极速CMS v1 API 基础能力**
+   - 新增核心 API 控制器：`jisucms/control/api_control.class.php`
+   - API 采用统一 JSON 响应格式：`err` / `msg` / `data` / `time`
+   - 第一阶段定位为只读 Content API，默认关闭，需后台开启
+   - 内置接口：
+     - `GET /api/v1/site`
+     - `GET /api/v1/categories`
+     - `GET /api/v1/categories/{cid}`
+     - `GET /api/v1/contents`
+     - `GET /api/v1/contents/{id}`
+     - `GET /api/v1/contents/{id}/{mid}`
+     - `GET /api/v1/search`
+   - 非伪静态兼容入口：
+     - `index.php?api-site`
+     - `index.php?api-categories`
+     - `index.php?api-category-cid-1`
+     - `index.php?api-contents`
+     - `index.php?api-content-id-1-mid-2`
+     - `index.php?api-search-keyword-xxx`
+   - 新增伪静态解析：`parseurl_control::api_url()`，在开启伪静态后解析 `/api/v1/...`
+   - 内容详情接口支持未传 `mid` 时自动遍历模型查找；也支持 `/api/v1/contents/{id}/{mid}` 显式指定模型
+   - 内容详情接口建议调用方传入 `mid` 以减少跨模型查找成本；未传 `mid` 时系统会自动遍历可用内容模型
+   - 列表响应新增 `maxpage` 字段，便于小程序/App 做分页判断
+   - 搜索接口 `/api/v1/search` 受后台「关闭搜索」配置 `close_search` 控制；关闭搜索时返回 `err=403`
+   - 只读 API 限制请求方法为 `GET` / `OPTIONS`，非只读方法返回 `method not allowed`
+   - API 错误码约定：
+     - `400`：参数错误，例如缺少 `id`、`cid`、`keyword`
+     - `403`：功能关闭，例如 API 未开启或搜索已关闭
+     - `404`：接口、模型、栏目或内容不存在
+     - `405`：请求方法不允许，第一阶段只读 API 仅允许 `GET` / `OPTIONS`
+     - `429`：请求过于频繁，触发 API 限流
+   - 新增 API 扩展 hook：
+     - `api_control_dispatch_before.php`
+     - `api_control_dispatch_after.php`
+
+2. **后台新增 API 配置项**
+   - 位置：后台 → 设置 → 其他设置
+   - 新增配置：
+     - `api_open`：API 开关，默认关闭
+     - `api_allow_origin`：CORS 来源，留空则不额外输出跨域头
+     - `api_limit`：列表接口分页上限，默认 50，系统最大限制 100
+     - `api_rate_limit`：同一 IP 每分钟请求上限，默认 120，0 表示关闭限流
+   - 新装站点在 `install/index.php` 初始化 API 配置：
+     - `api_open = 0`
+     - `api_allow_origin = ''`
+     - `api_limit = 50`
+     - `api_cache = 60`
+     - `api_rate_limit = 120`
+
+### 安全
+1. **API 第一阶段默认关闭且只读**
+   - 新安装站点默认 `api_open = 0`，需要后台 → 设置 → 其他设置 手动开启
+   - 不开放内容写入、删除、附件上传、管理员登录等高风险能力
+   - 输出字段采用白名单，不直接返回数据库整行
+   - 列表接口限制分页上限
+   - 支持轻量级 runtime 限流
+   - CORS 需后台显式配置
+
 ## [1.6.0] - 2026-05-07
 
 ### 新增

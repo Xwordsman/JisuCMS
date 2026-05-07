@@ -796,9 +796,20 @@ class setting_control extends admin_control{
             $admin_list_limits = isset($cfg['admin_list_limits']) && $cfg['admin_list_limits'] !== '' ? $cfg['admin_list_limits'] : '15,10,20,25,50,100';
             $input['admin_list_limits'] = form::get_text('admin_list_limits', $admin_list_limits);
 
+            $arr = array('1'=>lang('yes'),'0'=>lang('no'));
+            $api_open = isset($cfg['api_open']) ? (int)$cfg['api_open'] : 0;
+            $input['api_open'] = form::layui_loop('radio', 'api_open', $arr, $api_open);
+            $api_allow_origin = isset($cfg['api_allow_origin']) ? $cfg['api_allow_origin'] : '';
+            $input['api_allow_origin'] = form::get_text('api_allow_origin', $api_allow_origin);
+            $api_limit = isset($cfg['api_limit']) ? (int)$cfg['api_limit'] : 50;
+            $input['api_limit'] = form::get_number('api_limit', $api_limit);
+            $api_rate_limit = isset($cfg['api_rate_limit']) ? (int)$cfg['api_rate_limit'] : 120;
+            $input['api_rate_limit'] = form::get_number('api_rate_limit', $api_rate_limit);
+
             // hook admin_setting_control_other_after.php
 
             $this->assign('input', $input);
+
             $this->display();
         }else{
             _trim($_POST);
@@ -821,6 +832,11 @@ class setting_control extends admin_control{
             }
             if (empty($admin_list_limits_arr)) $admin_list_limits_arr = array(15, 10, 20, 25, 50, 100);
             $this->kv->xset('admin_list_limits', implode(',', $admin_list_limits_arr), 'cfg');
+
+            $this->kv->xset('api_open', (int)R('api_open', 'P'), 'cfg');
+            $this->kv->xset('api_allow_origin', str_replace(array("\r", "\n"), '', trim(R('api_allow_origin', 'P'))), 'cfg');
+            $this->kv->xset('api_limit', max(1, min(100, (int)R('api_limit', 'P'))), 'cfg');
+            $this->kv->xset('api_rate_limit', max(0, (int)R('api_rate_limit', 'P')), 'cfg');
 
             $debug = (int)R('debug','P');
             $debug_admin = (int)R('debug_admin','P');
