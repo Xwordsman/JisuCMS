@@ -74,8 +74,8 @@
 				{field: 'seo_description', title: '{lang:seo_description}', edit: 'text'},
 				{title: '{lang:opt}', width: 140, toolbar: '#currentTableBar', align: "center"}
 			]],
-			limits: [10, 15, 20, 25, 50, 100],
-			limit: 15,
+			limits: window.adminListLimits || [10, 15, 20, 25, 50, 100],
+			limit: window.adminListLimit || 15,
 			page: true
 		});
 		// 监听搜索操作

@@ -16,7 +16,7 @@
         window.UMEDITOR_HOME_URL = weburl+"/static/js/umeditor/";
 
         loadCss(UMEDITOR_HOME_URL+"themes/default/css/umeditor.min.css");
-        loadJs(UMEDITOR_HOME_URL+"umeditor.config.js", UMEDITOR_HOME_URL+"umeditor.min.js", UMEDITOR_HOME_URL+"lang/zh-cn/zh-cn.js", function(){
+        loadJs(UMEDITOR_HOME_URL+"umeditor.config.js", UMEDITOR_HOME_URL+"umeditor.min.js", UMEDITOR_HOME_URL+"pagebreak.js", UMEDITOR_HOME_URL+"lang/zh-cn/zh-cn.js", function(){
             $("#content").removeAttr("class");
 
             var ue = UM.getEditor("content", {initialFrameWidth : '100%', imageUrl : UMEDITOR_CONFIG.imageUrl + '{$edit_cid_id}'});

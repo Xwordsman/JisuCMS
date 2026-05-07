@@ -173,7 +173,7 @@ class cms_content extends model {
             return lang('please_fill_title');
         }elseif ( isset($post['content']) && strlen($post['content']) < $content_min_len ){
             return lang('please_fill_content_over_5', array('length'=>$content_min_len));
-        }elseif ( $isadd && isset($post['alias'] ) && $post['alias'] && $err_msg = $this->only_alias->check_alias(strtolower($post['alias']), 1) ){
+        }elseif ( $isadd && isset($post['alias'] ) && $post['alias'] && $err_msg = $this->only_alias->check_alias(trim($post['alias']), 1) ){
             return $err_msg;
         }elseif ( isset($post['id']) && empty($post['id']) ){
             return lang('id_not_exists');
@@ -248,7 +248,7 @@ class cms_content extends model {
         $tagstr = isset($post['tags']) ? trim($post['tags'], ", \t\n\r\0\x0B") : '';
         $flags = isset($post['flag']) ? (is_array($post['flag']) ? $post['flag'] : explode(',',$post['flag'])) : array();
         $author =isset($post['author']) ? trim($post['author']) : '';
-        $alias = isset($post['alias']) ? strtolower(trim($post['alias'])) : '';
+        $alias = isset($post['alias']) ? trim($post['alias']) : '';   // 内容别名支持中文，不再 strtolower
         $auto_pic = isset($this->cfg['auto_pic']) ? (int)$this->cfg['auto_pic'] : 0;    //自动提取缩略图
         $open_title_check = isset($this->cfg['open_title_check']) ? (int)$this->cfg['open_title_check'] : 0;    //是否开启标题重复检查
 
@@ -368,7 +368,7 @@ class cms_content extends model {
             $tags_arr = array_unique($tags_arr);    //去重
             $tags_arr = array_filter($tags_arr);    //去掉空
             $this->cms_content_tag->table = 'cms_'.$table.'_tag';
-            for($i = 0; isset($tags_arr[$i]) && $i < 8; $i++) { //只保留8个标签
+            for($i = 0; isset($tags_arr[$i]) && $i < 20; $i++) { //最多保留 20 个标签（v1.6.0+，原 8）
                 $name = $this->cms_content_tag->_tagformat($tags_arr[$i]);
                 if($name){
                     $tagdata = $this->cms_content_tag->find_fetch(array('name'=>$name), array(), 0, 1); //看看是否已经存在
@@ -387,7 +387,7 @@ class cms_content extends model {
                     $tagdata['count']++;
                     $tagdatas[] = $tagdata;
 
-                    if( _strlen(_json_encode($tags)) > 500){    //主表tags长度限制
+                    if( _strlen(_json_encode($tags)) > 1000){    //主表 tags 长度限制（v1.6.0+ varchar(1000)）
                         break;
                     }
                     $tags[$tagdata['tagid']] = $tagdata['name'];
@@ -530,7 +530,7 @@ class cms_content extends model {
         $tagstr = isset($post['tags']) ? trim($post['tags'], ", \t\n\r\0\x0B") : '';
         $flags = isset($post['flag']) ? (array)$post['flag'] : array();
         $author =isset($post['author']) ? trim($post['author']) : '';
-        $alias = isset($post['alias']) ? strtolower(trim($post['alias'])) : '';
+        $alias = isset($post['alias']) ? trim($post['alias']) : '';   // 内容别名支持中文，不再 strtolower
         $auto_pic = isset($this->cfg['auto_pic']) ? (int)$this->cfg['auto_pic'] : 0;    //自动提取缩略图
         $open_title_check = isset($this->cfg['open_title_check']) ? (int)$this->cfg['open_title_check'] : 0;    //是否开启标题重复检查
 
@@ -688,10 +688,10 @@ class cms_content extends model {
             }
         }
 
-        // 标签预处理，最多支持8个标签
+        // 标签预处理，最多支持 20 个标签（v1.6.0+，原 8）
         $this->cms_content_tag->table = 'cms_'.$table.'_tag';
         $tagdatas = array();
-        for($i = 0; isset($tags_arr[$i]) && $i < 8; $i++) {
+        for($i = 0; isset($tags_arr[$i]) && $i < 20; $i++) {
             $name = $this->cms_content_tag->_tagformat($tags_arr[$i]);
             if($name){
                 $tagdata = $this->cms_content_tag->find_fetch(array('name'=>$name), array(), 0, 1);
@@ -709,7 +709,7 @@ class cms_content extends model {
                 $tagdata['count']++;
                 $tagdatas[] = $tagdata;
 
-                if( _strlen(_json_encode($tags)) > 500){    //主表tags长度限制
+                if( _strlen(_json_encode($tags)) > 1000){    //主表 tags 长度限制（v1.6.0+ varchar(1000)）
                     break;
                 }
                 $tags[$tagdata['tagid']] = $tagdata['name'];

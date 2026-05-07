@@ -19,11 +19,18 @@ class only_alias extends model {
 	// 3.再排除分类表的 alias 字段
 	// 4.排除only_alias表的 alias 字段
 	public function check_alias($alias, $contentalias = 0) {
-        $alias_preg = "/^[0-9a-zA-Z-_]+$/i";
+        // 内容别名（contentalias=1）支持 Unicode 字母（含中文）；分类别名仍保持 ASCII
+        if ($contentalias) {
+            $alias_preg = '/^[\p{L}\p{N}\-_]+$/u';
+            $err_key = 'alias_error_2_content';
+        } else {
+            $alias_preg = '/^[0-9a-zA-Z\-_]+$/i';
+            $err_key = 'alias_error_2';
+        }
         // hook only_alias_model_check_alias_before.php
 
         if(!preg_match($alias_preg, $alias)){
-            return lang('alias_error_2');
+            return lang($err_key);
         }
 		$cfg = $this->runtime->xget();
 		$keywords = $this->kv->xget('link_keywords'); // 保留关键词

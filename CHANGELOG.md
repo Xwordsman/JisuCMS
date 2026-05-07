@@ -15,6 +15,186 @@
 ### 修复
 - 待发布的问题修复
 
+## [1.6.0] - 2026-05-07
+
+### 新增
+1. **后台列表分页可全局自定义每页条数**
+   - 后台 → 设置 → 其他设置 新增「列表分页」配置项，逗号分隔的整数列表，第一项为默认每页条数
+   - 默认值：`15,10,20,25,50,100`（保持原有行为，15 为默认）
+   - 影响范围：文章、属性（flags）、标签、评论、附件、用户共 6 个后台列表
+   - 实现方式：`admin/view/default/inc-header.htm` 在 `<head>` 注入 `window.adminListLimits` / `window.adminListLimit` 全局，6 个列表模板从全局读取
+   - 控制器：`admin/control/setting_control.class.php::other()` GET/POST 分支增加该字段，POST 严格校验（仅正整数、自动去重、空值回退默认）
+   - 数据存储：KV 表 `cfg.admin_list_limits`（字符串）
+
+2. **支持内容分页（多页文章）**
+   - 编辑器（UMeditor）工具栏新增「分页」按钮，点击插入分页符 `<hr class="ui_editor_pagebreak"/>`
+   - 前端阅读时按分页符把内容切成多页，底部自动显示分页导航条（上一页 / 数字页码 / 下一页）
+   - 后端管线之前已就绪（`cms_content_data_model::format_content()` + `block_global_show()` 已自动切片并生成 `$gdata[pages]`），本次仅补齐两端缺口：
+     - **新文件**：`static/js/umeditor/pagebreak.js` — 注册 `pagebreak` 按钮 + 文字图标 CSS
+     - **修改**：`static/js/umeditor/umeditor.config.js` — 工具栏加入 `pagebreak` token
+     - **修改**：`plugin/editor_um/admin_content_add_after.htm`、`user_content_add_after.htm`、`admin_category_set_after.htm` — `loadJs` 加载 `pagebreak.js`
+     - **修改**：`theme/default/article_show.htm` — 内容下方加 `{if:$gdata[pages]}{$gdata[pages]}{/if}` 渲染分页条
+   - URL 形式：`?show--cid-X-id-Y-page-2.html`（`content_url($content, $mid, TRUE)` 已支持 `{page}` 占位符）
+   - 单页模型 `mid=1`（独立页面）不参与该机制，符合设计原意
+   - **🎨 自定义主题作者升级指南**：
+
+     如果你正在维护一套**非默认主题**，主程序升级到 v1.6.0 后，分页按钮会出现在编辑器里，作者发的文章里也会有分页符，但你的前端**不会自动出现分页条**——需要主题作者改一处模板。
+
+     **第 1 步**：在主题里找到内容详情模板（一般是 `article_show.htm` 或自定义模型对应的 show 模板，例如 `news_show.htm`、`product_show.htm`），文件里会有渲染正文的语句，类似：
+
+     ```html
+     <div class="detail-con">
+         {$gdata[content]}
+     </div>
+     ```
+
+     **第 2 步**：在正文 `</div>` 之后、版权/上下篇之前，插入分页条渲染块：
+
+     ```html
+     <div class="detail-con">
+         {$gdata[content]}
+     </div>
+
+     {if:$gdata[pages]}
+     <div class="detail-pages" style="text-align:center;margin:20px 0;">
+         {$gdata[pages]}
+     </div>
+     {/if}
+     ```
+
+     **第 3 步（可选）**：CSS 美化分页条。`{$gdata[pages]}` 默认输出由 `paginator::pages()` 生成，结构为 `<a>1</a><b>2</b><a>3</a>...`（普通超链接 + 当前页用 `<b>`）。可在主题 CSS 里加：
+
+     ```css
+     .detail-pages a, .detail-pages b {
+         display: inline-block; padding: 4px 12px; margin: 0 2px;
+         border: 1px solid #ddd; border-radius: 3px; text-decoration: none;
+     }
+     .detail-pages b { background: #1e9fff; color: #fff; border-color: #1e9fff; }
+     .detail-pages a:hover { background: #f5f5f5; }
+     ```
+
+     **第 4 步（可选）**：如果你的主题用 Bootstrap 风格分页，可在内容页对应的 block 标签里指定不同分页函数：
+
+     ```html
+     {block:global_show show_prev_next="1" page_function="pages_bootstrap"}{/block}
+     ```
+
+     可选值：`pages`（默认）/ `pages_bootstrap` / `layui_pages`，对应 `jisucms/xiunophp/ext/paginator.class.php` 里的三个分页函数。
+
+     **第 5 步**：清缓存（后台 → 工具 → 清理缓存）后访问一篇有分页符的文章测试。若分页符没生效，检查模板里 `{block:global_show ...}{/block}` 这行是否存在——分页能力依赖该 block 的执行。
+
+3. **内容别名支持中文**
+   - 之前：内容别名（URL slug）只允许 `a-z 0-9 _ -`，且会被强制 `strtolower`
+   - 现在：支持任意 Unicode 字母（含中文、日韩等）、数字、横线、下划线，**保留原始大小写**
+   - 影响范围：仅**内容别名**；**分类别名仍保持 ASCII**（避免分类树结构受影响）
+   - 改动文件：
+     - `jisucms/model/only_alias_model.class.php` — `check_alias($alias, $contentalias=1)` 时使用 Unicode 正则 `[\p{L}\p{N}\-_]+`，并返回新错误键 `alias_error_2_content`
+     - `jisucms/model/cms_content_model.class.php` — `xadd()` / `xedit()` / `check_post()` 删除 `strtolower(trim(...))` 改为 `trim(...)`，保留原始大小写
+     - `jisucms/control/parseurl_control.class.php` — case 3（别名型）/ case 6（分类别名+内容别名）/ case 7（灵活型 `{alias}`）的 URL 匹配正则由 `[a-zA-Z0-9-_]+` 改为 `[\p{L}\p{N}\-_]+`，case 7 主匹配 `preg_match` 增加 `/u` 修饰符
+     - `jisucms/xiunophp/lang/zh-cn.php` / `en.php` — 新增 `alias_error_2_content` 键
+     - `jisucms/lang/zh-cn_admin.php` / `en_admin.php` — `alias_tips` 提示文案从「数字 字母 横线 下划线」更新为「中文 / 字母 / 数字 / 横线 / 下划线」
+   - 数据存储：现有 `cms_<table>.alias` 列 `varchar(80)`，按字符数计，可存约 80 个中文，无需建表迁移
+   - 已有 `数字_数字` 冲突检测保留（避免和「无别名+别名型 URL」冲突）
+   - **行为差异提示**：升级后新发布的文章，别名大小写不再被强制小写。如有依赖小写别名的旧自定义代码或导入脚本，请审视
+   - **数据库迁移**：无需，纯代码改动；若数据库表使用 `utf8mb3` 编码，建议改成 `utf8mb4` 以支持包含 emoji / 罕见字符的别名（默认装的就是 `utf8mb4`，多数用户无影响）
+
+4. **文章标签上限从 8 个提升到 20 个；标签支持连字符 `-`**
+   - **数量上限**：发布/编辑文章时最多保留的标签数从 `8` → `20`
+   - **连字符保留**：`vue-router`、`node.js`、`react-hooks` 这类带 `-` 的标签不再被错误转换成 `vue router` 等多个空格分词。之前 `cms_content_tag::_tagformat()` 第一步就 `str_replace('-', ' ', ...)`，这次去掉
+   - **JSON 长度上限**：主表 `tags` 字段（存放 `{tagid:name}` JSON 映射）从 `varchar(500)` 提升到 `varchar(1000)`，以容纳 20 个长标签。代码内 break 阈值同步从 `500` 提升到 `1000`
+   - 改动文件：
+     - `jisucms/model/cms_content_tag_model.class.php` — 删除 `str_replace('-', ' ', $tagname)` 那一行
+     - `jisucms/model/cms_content_model.class.php` — `xadd()` / `xedit()` 标签循环 `$i < 8` → `$i < 20`，长度阈值 `> 500` → `> 1000`
+     - `install/data/mysql.sql` — `pre_cms_article.tags` 列定义改为 `varchar(1000)`（仅影响新装站点）
+     - `jisucms/model/models_model.class.php` — 后台「内容模型」新建表的 SQL 模板里 `tags` 列改为 `varchar(1000)`（影响 v1.6.0+ 新建的内容模型表）
+
+   - **🔧 升级用户必做：手动改库**
+
+     主程序升级到 v1.6.0 后，若你想真正写入超过 500 字节的 JSON 标签串，需对**每张内容主表**执行一次 `ALTER TABLE`：
+
+     ```sql
+     ALTER TABLE `cms_article` MODIFY `tags` VARCHAR(1000) NOT NULL DEFAULT '' COMMENT '标签 (json数组)';
+     -- 如有自定义模型表，比如 cms_news / cms_product 等，每张都执行一次：
+     ALTER TABLE `cms_news`    MODIFY `tags` VARCHAR(1000) NOT NULL DEFAULT '' COMMENT '标签 (json数组)';
+     ALTER TABLE `cms_product` MODIFY `tags` VARCHAR(1000) NOT NULL DEFAULT '' COMMENT '标签 (json数组)';
+     ```
+
+     如何批量列出所有需要改的表：
+     ```sql
+     SELECT TABLE_NAME FROM information_schema.COLUMNS
+       WHERE TABLE_SCHEMA = DATABASE()
+         AND COLUMN_NAME = 'tags'
+         AND DATA_TYPE = 'varchar'
+         AND CHARACTER_MAXIMUM_LENGTH = 500;
+     ```
+
+     **不改库会怎样**：仍可使用 v1.6.0 的新功能，每篇文章最多 20 个标签依旧保存（代码层 break 阈值 1000，但 DB 仍 500），DB 会自行截断 JSON——结果是只保留前面能装下的若干个。**不改库 ≈ 仍按旧 500 字节上限运作**，新功能不报错但效果打折。
+
+   - **行为差异提示**：
+     - 旧数据中 `vue-router` 已被分词成 `vue router` 的标签**不会自动合并**到新格式。如果想清理，可在后台「标签管理」中手动改名
+     - 旧 8 个上限内的文章升级后**完全不受影响**，标签照常显示
+
+5. **个人主页 `/space/` 支持按内容模型过滤**
+   - 之前：`/space/3.html` 只能展示 uid=3 用户**默认模型**（`mid=2`，文章）的内容
+   - 现在：新增 URL 形式 `/space/{mid}_{uid}.html`
+     - `/space/3.html` → 维持原有行为：uid=3，模型默认（block 配置或 `mid=2`）
+     - `/space/5_3.html` → uid=3，**只显示 mid=5 模型的内容**
+     - `/space/5_3/page_2.html` → 同上 + 第 2 页
+   - 应用场景：用户既发"文章"又发"产品"/"案例"等多模型内容时，可在个人主页直接切换查看
+   - 改动文件：
+     - `jisucms/control/parseurl_control.class.php::space_url()` — 新增 `\d+_\d+` 模式匹配，分别填入 `_GET[mid]` 和 `_GET[uid]`，原有纯 `\d+` 形式保持不变
+     - `jisucms/block/block_global_space.lib.php` — 当 `R('mid') > 0` 时优先使用 URL 上的 mid 覆盖 block 配置的 mid；分页 URL 调用 `space_url()` 时透传 mid，保证翻页保留筛选
+     - `jisucms/model/urls_model.class.php::space_url()` — 函数签名末尾追加可选参数 `$mid = 0`，>0 时输出 `/space/{mid}_{uid}.html` 形式，普通调用兼容不变
+   - 缓存：`block_global_space` 的 `cache_params` 数组本来就含 `$mid`，所以新旧 URL 的缓存自动隔离，不会串数据
+   - **🎨 主题作者可选改进**：在 `space.htm` 增加模型 Tab 切换条，例如：
+     ```html
+     {block:global_models}{/block}
+     <ul class="space-tabs">
+         <li><a href="{$cfg[weburl]}{$cfg[link_space_pre]}{$cfg_var[uid]}{$cfg[link_space_end]}">全部</a></li>
+         {loop:$gdata_models[list] $m}
+         <li><a href="{$cfg[weburl]}{$cfg[link_space_pre]}{$m[mid]}_{$cfg_var[uid]}{$cfg[link_space_end]}">{$m[name]}</a></li>
+         {/loop}
+     </ul>
+     ```
+     不改主题模板也能用，只是用户得手动拼 URL；改了体验更好
+
+6. **附件命名支持 UUID（默认 UUID v4）**
+   - 之前：上传文件命名 `date('His') + uniqid() + random(6) + .ext`，自定义短串格式（约 25 字符 + 后缀）
+   - 现在：默认改用 **UUID v4（带横线）** 命名，更标准、更专业、更难枚举猜测
+     - `uuid` 默认 → `550e8400-e29b-41d4-a716-446655440000.jpg`（36 字符）
+     - `uuid_compact` → `550e8400e29b41d4a716446655440000.jpg`（32 字符）
+     - `legacy` → 保留旧格式，给老用户兼容
+   - 后台「设置 → 上传设置」底部新增「附件命名风格」下拉框，三选一
+   - 路径分子目录规则不变（仍按 `Ymd/` 日期分目录），UUID 只影响最终文件名
+   - **白名单后缀逻辑保留**（非白名单扩展会被强制改成 `_xxx.file`，仍然防 webshell）
+   - 改动文件：
+     - `jisucms/xiunophp/ext/upload.class.php` — `getName()` 增加 style 分支；新增私有方法 `uuid_v4($with_hyphens)` 使用 `random_bytes(16)` 生成 RFC 4122 v4
+     - `install/index.php` — 新装站点 cfg 默认 `'upload_filename_style' => 'uuid'`
+     - `admin/control/setting_control.class.php::attach()` — GET 加表单项，POST 严格白名单校验（`uuid`/`uuid_compact`/`legacy`，未匹配回退 `uuid`）
+     - `admin/view/default/setting_attach.htm` — 加下拉 UI（在 tab 内容下方）
+     - `jisucms/lang/zh-cn_admin.php` / `en_admin.php` — 5 个新键（含 3 个风格选项标签）
+   - 配置存储：KV 表 `cfg.upload_filename_style`（字符串）
+   - **不需要 DB 迁移**：纯运行时配置
+   - **不影响已有文件**：旧上传文件保留原文件名，只有**升级后新上传**的文件使用新命名风格
+   - **行为差异提示**：升级用户首次访问后台时，若 cfg 里没有 `upload_filename_style` 字段，`upload.class.php::getName()` 自动退化为 UUID（默认）。如果想保留旧行为，请到「设置 → 上传设置」选择"旧格式"
+
+### 修复
+1. **后台「设置 → 链接设置 → 伪静态」给用户的 Nginx 规则跟实际目录结构脱节**
+   - 原规则模板里写的还是 v1.4 之前的目录名：
+     - `view/` 已被 v1.5.0 重命名为 `theme/`（前台模板目录）
+     - `plugin/` 已从 `jisucms/plugin/` 提到根目录
+   - 这导致：
+     - **保护漏洞**：`theme/*.htm`、`plugin/*.htm`、`plugin/*.ini` 没被规则覆盖，可被外部直接访问读到模板源码
+     - **`plugin/*.php` 也没纳入"防 webshell"白名单**，与 `static/runtime/upload/` 同样属于"内容目录"，应一并禁止 web 直接执行
+   - 改动文件：`admin/control/setting_control.class.php` 第 124、126 行
+     - 模板保护规则：`(view|jisucms|admin)` → `(theme|jisucms|admin|plugin)`
+     - 脚本执行禁令：`(static|runtime|upload)` → `(static|runtime|upload|plugin)`
+   - 不影响 Apache / IIS 模板（Apache 用 `FilesMatch .htm|ini` 全局禁，本来就覆盖；IIS 没有目录级 deny，靠 `IsFile/IsDirectory` 反向 fallback 到 `index.php`）
+   - **现有用户必须重新生成 nginx 配置并 reload**：
+     1. 后台 → 设置 → 链接设置 → 伪静态 Tab → 选 Nginx → 复制新规则
+     2. 替换站点 vhost 里的旧规则
+     3. `nginx -s reload`
+
 ## [1.5.0] - 2026-05-06
 
 ### 新增

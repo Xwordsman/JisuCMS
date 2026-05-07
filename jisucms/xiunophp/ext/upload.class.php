@@ -184,7 +184,43 @@ class upload{
 			'chm', 'torrent', 'ttf', 'font',
 		);
 		$fileExt = in_array($this->fileExt, $Exts) ? '.'.$this->fileExt : '_'.$this->fileExt.'.file';
-		return date('His').uniqid().$this->random(6).$fileExt;
+
+		// v1.6.0+ 命名风格：可由 $config['style'] 显式指定，否则从 cfg 读取，未配置默认 uuid
+		// 可选值：uuid（带横线 36 字符）/ uuid_compact（无横线 32 字符）/ legacy（旧规则）
+		$style = isset($this->config['style']) ? $this->config['style'] : '';
+		if ($style === '') {
+			try {
+				$rcfg = core::model('runtime')->xget('cfg');
+				$style = isset($rcfg['upload_filename_style']) ? $rcfg['upload_filename_style'] : 'uuid';
+			} catch (Exception $e) {
+				$style = 'uuid';
+			}
+		}
+
+		switch ($style) {
+			case 'legacy':
+				return date('His').uniqid().$this->random(6).$fileExt;
+			case 'uuid_compact':
+				return $this->uuid_v4(false).$fileExt;
+			case 'uuid':
+			default:
+				return $this->uuid_v4(true).$fileExt;
+		}
+	}
+
+	// 生成 UUID v4（RFC 4122）
+	private function uuid_v4($with_hyphens = true) {
+		if (function_exists('random_bytes')) {
+			$data = random_bytes(16);
+		} else {
+			$data = '';
+			for ($i = 0; $i < 16; $i++) $data .= chr(mt_rand(0, 255));
+		}
+		$data[6] = chr((ord($data[6]) & 0x0f) | 0x40); // 第 7 字节高 4 位 = 0100，标识 v4
+		$data[8] = chr((ord($data[8]) & 0x3f) | 0x80); // 第 9 字节高 2 位 = 10，RFC 4122 variant
+		$hex = bin2hex($data);
+		if (!$with_hyphens) return $hex;
+		return substr($hex, 0, 8).'-'.substr($hex, 8, 4).'-'.substr($hex, 12, 4).'-'.substr($hex, 16, 4).'-'.substr($hex, 20, 12);
 	}
 
 	// 获取安全的文件扩展名

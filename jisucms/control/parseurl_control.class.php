@@ -258,7 +258,7 @@ class parseurl_control extends control{
                     $_GET['cid'] = $mat[1];
                     $_GET['id'] = $mat[2];
                     return true;
-                }elseif( preg_match('/^[a-zA-Z0-9-_]+$/i', $newurl) ) {
+                }elseif( preg_match('/^[\p{L}\p{N}\-_]+$/u', $newurl) ) {  // 内容别名支持 Unicode（含中文）
                     $row = $this->only_alias->get($newurl);
                     if( !empty($row) ) {
                         $_GET['cid'] = $row['cid'];
@@ -306,7 +306,7 @@ class parseurl_control extends control{
                         $_GET['cid'] = $mat[1];
                         $_GET['id'] = $mat[2];
                         return true;
-                    }elseif(preg_match('/^[a-zA-Z0-9-_]+$/i', $u_arr[1])) {
+                    }elseif(preg_match('/^[\p{L}\p{N}\-_]+$/u', $u_arr[1])) {  // 内容别名支持 Unicode（含中文）
                         $row = $this->only_alias->get($u_arr[1]);
                         if(!empty($row) && $row['cid'] == $cid) {
                             $_GET['cid'] = $row['cid'];
@@ -324,7 +324,7 @@ class parseurl_control extends control{
                     '\{cid\}' => '(?<cid>\d+)',
                     '\{mid\}' => '(?<mid>\d+)',
                     '\{id\}' => '(?<id>\d+)',
-                    '\{alias\}' => '(?<alias>\w+)',
+                    '\{alias\}' => '(?<alias>[\p{L}\p{N}\-_]+)',
                     '\{cate_alias\}' => '(?<cate_alias>\w+)',
                     '\{password\}' => '(?<password>\w+)',
                     '\{ymd\}' => '(?<ymd>\d{8})',
@@ -335,7 +335,7 @@ class parseurl_control extends control{
                     '\{hashids\}' => '(?<hashids>\w+)'
                 ));
                 // hook parseurl_control_content_url_switch_7_quote_after.php
-                preg_match('#'.$quote.'#', $uri, $mat);
+                preg_match('#'.$quote.'#u', $uri, $mat);  // /u 使 Unicode 字符类（含中文别名）生效
                 if($mat){
                     //用于control验证日期
                     isset($mat['ymd']) AND $_GET['date_ymd'] = $mat['ymd'];
@@ -759,7 +759,22 @@ class parseurl_control extends control{
             if(substr($uri, -$len2) == $cfg['link_space_end']) {
                 $newurl = substr($uri, $len, -$len2);
                 $u_arr = explode('/', $newurl);
-                if( $this->integer_check($u_arr[0]) ){
+                // v1.6.0+ 支持 mid_uid 形式：/space/5_3.html → mid=5, uid=3
+                if( preg_match('/^(\d+)_(\d+)$/', $u_arr[0], $mat) ){
+                    $_GET['control'] = 'space';
+                    $_GET['action'] = 'index';
+                    $_GET['mid'] = $mat[1];
+                    $_GET['uid'] = $mat[2];
+                    //分页
+                    if( isset($u_arr[1]) ){
+                        $page = $this->page_check($u_arr[1]);
+                        if($page){
+                            $_GET['page'] = $page;
+                        }else{
+                            core::error404();
+                        }
+                    }
+                }elseif( $this->integer_check($u_arr[0]) ){
                     $_GET['control'] = 'space';
                     $_GET['action'] = 'index';
                     $_GET['uid'] = $u_arr[0];

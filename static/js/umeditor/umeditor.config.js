@@ -13,7 +13,7 @@
             '| forecolor backcolor | justifyleft justifycenter justifyright | link unlink | removeformat',
             '| insertorderedlist insertunorderedlist | fontfamily fontsize paragraph' ,
             '| image insertvideo  | map',
-            '| horizontal print preview fullscreen'
+            '| horizontal pagebreak print preview fullscreen'
         ]
 
         ,initialFrameWidth:600

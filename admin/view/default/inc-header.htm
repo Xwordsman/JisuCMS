@@ -14,6 +14,23 @@
     <script src="{$C[admin_static]}layui/js/lay-config.js?v=1.0.4" charset="utf-8"></script>
     <script type="text/javascript">
         window.admin_lang = "{php}echo C('admin_lang');{/php}";
+        {php}
+        // 后台列表分页全局配置（v1.6.0+）
+        $_al_kv = core::model('kv');
+        $_al_cfg = $_al_kv->xget('cfg');
+        $_al_str = !empty($_al_cfg['admin_list_limits']) ? $_al_cfg['admin_list_limits'] : '15,10,20,25,50,100';
+        $_al_arr = array();
+        foreach(explode(',', $_al_str) as $_al_v){
+            $_al_v = (int)trim($_al_v);
+            if($_al_v > 0 && !in_array($_al_v, $_al_arr, true)) $_al_arr[] = $_al_v;
+        }
+        if(empty($_al_arr)) $_al_arr = array(15,10,20,25,50,100);
+        $_al_default = (int)$_al_arr[0];
+        $_al_sorted = $_al_arr;
+        sort($_al_sorted);
+        echo "window.adminListLimits = ".json_encode(array_values($_al_sorted)).";\n";
+        echo "        window.adminListLimit = ".$_al_default.";";
+        {/php}
     </script>
     <script src="{$C[admin_static]}admin/js/admin.js" charset="utf-8"></script>
     {hook:admin_head_after.htm}

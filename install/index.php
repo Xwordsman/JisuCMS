@@ -208,6 +208,8 @@ if($do == 'lang') {
         'admin_safe_entrance' => 0, //后台安全入口
         'admin_safe_auth' => random(6, 2),    //后台安全密钥
         'url_path'=>0,                      //0表示绝对URL，1表示相对URL
+        'admin_list_limits' => '15,10,20,25,50,100', //后台列表分页可选项，第一项为默认每页条数
+        'upload_filename_style' => 'uuid', //附件命名风格：uuid / uuid_compact / legacy
     );
 
     //写数据库操作

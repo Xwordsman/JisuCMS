@@ -28,7 +28,7 @@ class cms_content_tag extends model {
         }
 	    if($add){
             $tagname = safe_str($tagname);
-            $tagname = str_replace('-', ' ', $tagname);//横线转空格
+            // v1.6.0+：保留连字符 -，仅折叠多余空格；让 vue-router、node.js 等带连字符的标签保持原貌
             $tagname = preg_replace("/\s(?=\s)/","\\1",$tagname); //多个空格转成一个空格
             $tagname = strtolower($tagname);
 

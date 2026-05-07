@@ -25,7 +25,13 @@ function block_global_space($conf) {
 
 	// hook block_global_space_before.php
 
-    $mid = _int($conf, 'mid', 2);
+    // v1.6.0+ 优先使用 URL 上的 mid（/space/5_3.html 形式），其次用 block 配置 mid，再退到 2
+    $mid_get = (int)R('mid');
+    if ($mid_get > 0) {
+        $mid = $mid_get;
+    } else {
+        $mid = _int($conf, 'mid', 2);
+    }
 	$pagenum = empty($conf['pagenum']) ? 20 : max(1, (int)$conf['pagenum']);
 	$titlenum = isset($conf['titlenum']) ? (int)$conf['titlenum'] : 0;
 	$intronum = isset($conf['intronum']) ? (int)$conf['intronum'] : 0;
@@ -84,7 +90,8 @@ function block_global_space($conf) {
     }
 
 	$page = min($maxpage, $page);
-	$pages = paginator::$page_function($page, $maxpage, $run->urls->space_url($uid, TRUE), $pageoffset);
+	// v1.6.0+ 透传 mid，让分页链接保留 /space/{mid}_{uid}/page_{N}.html 形式
+	$pages = paginator::$page_function($page, $maxpage, $run->urls->space_url($uid, TRUE, array(), $mid_get > 0 ? $mid : 0), $pageoffset);
 
     if($showcate){
         $allcategorys = $run->category->get_category_db();

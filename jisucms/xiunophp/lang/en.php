@@ -120,6 +120,7 @@ return array(
     'id_not_exists'=>'ID does not exist',
     'alias_error_1'=>'Alias can only be number letter _',
     'alias_error_2'=>'Alias can only be number letter _ -',
+    'alias_error_2_content'=>'Content alias can only be unicode letters (e.g. Chinese) numbers _ -',
     'alias_error_3'=>'Alias already used by tag URL',
     'alias_error_4'=>'Alias already used by comment URL',
     'alias_error_5'=>'Alias already used by Personal URL',

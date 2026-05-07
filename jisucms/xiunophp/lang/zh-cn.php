@@ -120,6 +120,7 @@ return array(
     'id_not_exists'=>'ID不存在哦',
     'alias_error_1'=>'别名只能是 英文 数字 _',
     'alias_error_2'=>'别名只能是 英文 数字 _ -',
+    'alias_error_2_content'=>'内容别名只能是 中文/英文 数字 _ -',
     'alias_error_3'=>'已经被标签URL使用',
     'alias_error_4'=>'已经被评论URL使用',
     'alias_error_5'=>'已经被个人主页URL使用',

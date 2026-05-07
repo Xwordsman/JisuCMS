@@ -75,8 +75,8 @@
 			cellMinWidth: 50,
 			escape: false,
 			cols: [[{$cols}]],
-			limits: [10, 15, 20, 25, 50, 100],
-			limit: 15,
+			limits: window.adminListLimits || [10, 15, 20, 25, 50, 100],
+			limit: window.adminListLimit || 15,
 			page: true,
 			done: function(res, curr, count){
 				currPage = curr;

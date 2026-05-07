@@ -196,7 +196,8 @@ class urls extends model {
     }
 
     // 用户个人主页链接格式化
-    public function space_url($uid = 0, $page = FALSE, $extra = array()) {
+    // v1.6.0+ 增加可选 $mid 参数：>0 时生成 /space/{mid}_{uid}.html 形式的过滤链接
+    public function space_url($uid = 0, $page = FALSE, $extra = array(), $mid = 0) {
         //使用相对URL
         if(isset($this->cfg['url_path']) && !empty($this->cfg['url_path'])){
             $this->cfg['weburl'] = $this->cfg['webdir'];
@@ -204,12 +205,15 @@ class urls extends model {
         // hook urls_model_space_url_before.php
         if(empty($uid)){return '';}
 
+        $mid = (int)$mid;
         if(empty($_ENV['_config']['jisucms_parseurl'])) {
             $s = $page ? '-page-{page}' : '';
-            return $this->cfg['weburl'].'index.php?space--uid-'.$uid.$s.$_ENV['_config']['url_suffix'];
+            $mids = $mid > 0 ? '-mid-'.$mid : '';
+            return $this->cfg['weburl'].'index.php?space--uid-'.$uid.$mids.$s.$_ENV['_config']['url_suffix'];
         }else{
             // hook urls_model_space_url_jisucms_parseurl_before.php
-            return $this->cfg['weburl'].$this->cfg['link_space_pre'].$uid.($page ? '/page_{page}' : '').$this->cfg['link_space_end'];
+            $key = $mid > 0 ? $mid.'_'.$uid : $uid;
+            return $this->cfg['weburl'].$this->cfg['link_space_pre'].$key.($page ? '/page_{page}' : '').$this->cfg['link_space_end'];
         }
     }
 

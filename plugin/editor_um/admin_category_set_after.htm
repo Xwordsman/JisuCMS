@@ -20,7 +20,7 @@ window.editor_init = function(){
 	if(typeof UM == 'object') UM.delEditor('page_content');
 
     loadCss(UMEDITOR_HOME_URL+"themes/default/css/umeditor.min.css");
-    loadJs(UMEDITOR_HOME_URL+"umeditor.config.js", UMEDITOR_HOME_URL+"umeditor.min.js", UMEDITOR_HOME_URL+"lang/zh-cn/zh-cn.js", function(){
+    loadJs(UMEDITOR_HOME_URL+"umeditor.config.js", UMEDITOR_HOME_URL+"umeditor.min.js", UMEDITOR_HOME_URL+"pagebreak.js", UMEDITOR_HOME_URL+"lang/zh-cn/zh-cn.js", function(){
 		$("#page_content").removeAttr("class");
 
 		var ue = UM.getEditor('page_content', {initialFrameWidth : '100%', imageUrl : UMEDITOR_CONFIG.imageUrl + '-mid-1'});

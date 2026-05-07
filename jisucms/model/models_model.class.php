@@ -136,7 +136,7 @@ class models extends model {
           cid int(10) unsigned NOT NULL DEFAULT '0' COMMENT '分类ID',
           title varchar(200) NOT NULL DEFAULT '' COMMENT '标题',
           alias varchar(80) NOT NULL DEFAULT '' COMMENT 'URL别名',
-          tags varchar(500) NOT NULL DEFAULT '' COMMENT '标签 (json数组)',
+          tags varchar(1000) NOT NULL DEFAULT '' COMMENT '标签 (json数组)',
           intro varchar(255) NOT NULL DEFAULT '' COMMENT '内容介绍',
           pic varchar(255) NOT NULL DEFAULT '' COMMENT '图片地址',
           uid int(10) unsigned NOT NULL DEFAULT '0' COMMENT '用户ID',

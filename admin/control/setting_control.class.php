@@ -121,9 +121,9 @@ class setting_control extends admin_control{
             //$nginx = '#禁止访问指定的后缀名文件'."\n";
             $nginx = 'location ~ \.(zip|rar|7z|gz|ini|htm)$ {deny all;}'."\n";
             //$nginx .= '#禁止访问指定目录的后缀名文件(保护模板用)'."\n";
-            $nginx .= 'location ~ /(view|jisucms|admin)/.*\.(htm|ini)?$ {deny all;}'."\n";
-            //$nginx .= '#禁止访问指定目录的后缀名文件'."\n";
-            $nginx .= 'location ~ ^/(static|runtime|upload)/.*.(php|php3|php4|php5|cgi|asp|aspx|jsp|shtml|shtm|pl|cfm|sql|mdb|dll|exe|com|inc|sh)$ {deny all;}'."\n";
+            $nginx .= 'location ~ /(theme|jisucms|admin|plugin)/.*\.(htm|ini)?$ {deny all;}'."\n";
+            //$nginx .= '#禁止访问指定目录的可执行脚本(防 webshell)'."\n";
+            $nginx .= 'location ~ ^/(static|runtime|upload|plugin)/.*\.(php|php3|php4|php5|cgi|asp|aspx|jsp|shtml|shtm|pl|cfm|sql|mdb|dll|exe|com|inc|sh)$ {deny all;}'."\n";
             //$nginx .= '#系统伪静态规则'."\n";
             $nginx .= 'if ($request_uri ~ "//") {'."\n";
             $nginx .= "\t".'return 404;'."\n";
@@ -465,6 +465,15 @@ class setting_control extends admin_control{
             $input['up_file_ext'] = form::get_text('up_file_ext', $cfg['up_file_ext'], '', 'required="required" lay-verify="required"');
             $input['up_file_max_size'] = form::get_number('up_file_max_size', $cfg['up_file_max_size'], '', 'required="required" lay-verify="required"');
 
+            // 附件命名风格（v1.6.0+），默认 uuid
+            $upload_filename_style = isset($cfg['upload_filename_style']) && $cfg['upload_filename_style'] !== '' ? $cfg['upload_filename_style'] : 'uuid';
+            $style_arr = array(
+                'uuid'         => lang('upload_style_uuid'),
+                'uuid_compact' => lang('upload_style_uuid_compact'),
+                'legacy'       => lang('upload_style_legacy'),
+            );
+            $input['upload_filename_style'] = form::layui_loop('select', 'upload_filename_style', $style_arr, $upload_filename_style);
+
             // hook admin_setting_control_attach_after.php
 
             $this->assign('input', $input);
@@ -475,6 +484,13 @@ class setting_control extends admin_control{
             $this->kv->xset('up_img_max_size', R('up_img_max_size', 'P'), 'cfg');
             $this->kv->xset('up_file_ext', R('up_file_ext', 'P'), 'cfg');
             $this->kv->xset('up_file_max_size', R('up_file_max_size', 'P'), 'cfg');
+
+            // 附件命名风格白名单校验
+            $style_post = (string)R('upload_filename_style', 'P');
+            if (!in_array($style_post, array('uuid', 'uuid_compact', 'legacy'), true)) {
+                $style_post = 'uuid';
+            }
+            $this->kv->xset('upload_filename_style', $style_post, 'cfg');
 
             // hook admin_setting_control_attach_post_after.php
 
@@ -777,6 +793,9 @@ class setting_control extends admin_control{
             $arr = array('0'=>lang('url_absolute_path'),'1'=>lang('url_relative_path'));
             $input['url_path'] = form::layui_loop('radio', 'url_path', $arr, $cfg['url_path']);
 
+            $admin_list_limits = isset($cfg['admin_list_limits']) && $cfg['admin_list_limits'] !== '' ? $cfg['admin_list_limits'] : '15,10,20,25,50,100';
+            $input['admin_list_limits'] = form::get_text('admin_list_limits', $admin_list_limits);
+
             // hook admin_setting_control_other_after.php
 
             $this->assign('input', $input);
@@ -792,6 +811,16 @@ class setting_control extends admin_control{
             $this->kv->xset('url_path', (int)R('url_path', 'P'), 'cfg');
             $this->kv->xset('open_title_check', (int)R('open_title_check', 'P'), 'cfg');
             $this->kv->xset('content_min_len', (int)R('content_min_len', 'P'), 'cfg');
+
+            // 后台列表分页可选项：仅保留正整数、去重、原始顺序保留（第一项=默认每页条数）
+            $admin_list_limits_raw = (string)R('admin_list_limits', 'P');
+            $admin_list_limits_arr = array();
+            foreach (explode(',', $admin_list_limits_raw) as $_v) {
+                $_v = (int)trim($_v);
+                if ($_v > 0 && !in_array($_v, $admin_list_limits_arr, true)) $admin_list_limits_arr[] = $_v;
+            }
+            if (empty($admin_list_limits_arr)) $admin_list_limits_arr = array(15, 10, 20, 25, 50, 100);
+            $this->kv->xset('admin_list_limits', implode(',', $admin_list_limits_arr), 'cfg');
 
             $debug = (int)R('debug','P');
             $debug_admin = (int)R('debug_admin','P');
